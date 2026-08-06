@@ -9,21 +9,24 @@
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <!-- آیکون‌ها -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- کتابخانه Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        /* استایل‌های شما بدون تغییر باقی می‌مانند */
         :root {
-            --bg-main: #ecfdf5; /* پس‌زمینه کلی صفحه (سبز خیلی کمرنگ) */
-            --bg-card: #a7f3d0; /* کانتینر اصلی (سبز متوسط) */
-            --bg-input: #f0fdf4; /* پس‌زمینه لیست‌ها و المان‌های کوچک‌تر */
-            --border-light: #6ee7b7; /* حاشیه‌های سبز */
-            --text-main: #064e3b; /* متن تیره سبز */
-            --text-muted: #047857; /* متن کم‌رنگ‌تر */
-            --accent-1: #8b5cf6; /* بنفش */
-            --accent-2: #ec4899; /* صورتی */
+            --bg-main: #ecfdf5;
+            --bg-card: #a7f3d0;
+            --bg-input: #f0fdf4;
+            --border-light: #6ee7b7;
+            --text-main: #064e3b;
+            --text-muted: #047857;
+            --accent-1: #8b5cf6;
+            --accent-2: #ec4899;
             --accent-light: #f3e8ff;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --form-bg: #6ee7b7; /* کادر فرم (سبز تیره‌تر برای متمایز شدن) */
+            --form-bg: #6ee7b7;
             --form-border: #34d399;
         }
 
@@ -49,7 +52,6 @@
             color: var(--text-main);
         }
 
-        /* پارتیکل‌های پس‌زمینه روشن */
         .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
         .particle { position: absolute; background: rgba(139, 92, 246, 0.3); border-radius: 50%; animation: floatParticle linear infinite; }
         @keyframes floatParticle {
@@ -58,7 +60,6 @@
             100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
         }
 
-        /* کانتینر اصلی */
         .portal-container {
             width: 100%;
             max-width: 900px;
@@ -71,7 +72,6 @@
             box-shadow: 0 20px 50px -20px rgba(16, 185, 129, 0.25);
         }
 
-        /* هدر */
         .header {
             display: flex; align-items: center; justify-content: space-between;
             margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
@@ -94,7 +94,6 @@
         }
         .header-sub i { color: var(--accent-1); }
 
-        /* فرم */
         .form-card {
             background: var(--form-bg); border-radius: 24px; padding: 24px 20px;
             margin-bottom: 32px; border: 1px solid var(--form-border);
@@ -127,7 +126,6 @@
             border-radius: 8px;
         }
 
-        /* بخش آپلود عکس */
         .avatar-upload-group { align-items: center; }
         .avatar-upload {
             width: 46px; height: 46px; border-radius: 14px; border: 2px dashed var(--border-light);
@@ -156,7 +154,6 @@
         .btn-cancel { background: #f1f5f9; color: var(--text-muted); display: none; }
         .btn-cancel:hover { background: #e2e8f0; }
 
-        /* لیست */
         .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .list-header h2 { font-size: 1.2rem; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
         .list-header h2 i { color: var(--accent-2); }
@@ -247,6 +244,57 @@
         .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 12px; }
         .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
 
+        /* استایل جدید برای لاگین */
+        .auth-section {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg-input);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .auth-section .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .auth-section .user-info .email {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .auth-section .btn-auth {
+            padding: 8px 20px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.9rem;
+        }
+        .btn-login {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+        }
+        .btn-login:hover {
+            transform: scale(1.05);
+        }
+        .btn-logout {
+            background: #f1f5f9;
+            color: var(--text-muted);
+        }
+        .btn-logout:hover {
+            background: #e2e8f0;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
         @media (max-width: 768px) {
             .portal-container { padding: 24px 18px; border-radius: 24px; }
             .form-grid { grid-template-columns: 60px 1fr 1fr; }
@@ -255,6 +303,7 @@
             .btn-add, .btn-cancel { width: 100%; }
             .birthday-item { flex-direction: column; align-items: flex-start; gap: 12px; }
             .item-right { width: 100%; justify-content: space-between; }
+            .auth-section { flex-direction: column; align-items: stretch; text-align: center; }
         }
     </style>
 </head>
@@ -277,6 +326,22 @@
             <div class="header-sub">
                 <i class="fas fa-bell"></i>
                 <span id="todayDate">امروز: -</span>
+            </div>
+        </div>
+
+        <!-- بخش احراز هویت -->
+        <div class="auth-section" id="authSection">
+            <div class="user-info" id="userInfo">
+                <i class="fas fa-user-circle" style="font-size: 1.5rem; color: var(--accent-1);"></i>
+                <span class="email" id="userEmail">ورود نکرده‌اید</span>
+            </div>
+            <div>
+                <button class="btn-auth btn-login" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> ورود با گوگل
+                </button>
+                <button class="btn-auth btn-logout" id="logoutBtn" style="display:none;">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
             </div>
         </div>
 
@@ -326,9 +391,33 @@
     </div>
 
     <script>
+        // ============================================
+        // تنظیمات Supabase - این مقادیر را جایگزین کنید
+        // ============================================
+        const SUPABASE_CONFIG = {
+             url: 'https://buowqguzsrychwoxyqby.supabase.co',      // آدرس پروژه شما
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1b3dxZ3V6c3J5Y2h3b3h5cWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3MTQ1MzIsImV4cCI6MjA3ODI5MDUzMn0._2j0iRUY4L8x_59tDMEBh8qjSTHZdUOPd0nFqPZkXAk'                         // کلید عمومی پروژه شما
+        };
+
+        // ============================================
+        // راه‌اندازی کلاینت Supabase
+        // ============================================
+        const supabase = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+
+        // ============================================
+        // متغیرهای عمومی
+        // ============================================
         const persianMonths = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
-        
+        let birthdays = [];
+        let editingId = null;
+        let currentImage = null;
+        let currentUser = null;
+
+        // ============================================
+        // توابع تبدیل تاریخ شمسی
+        // ============================================
         function isLeapJalaliYear(jy) { return ((jy % 33 + 3) % 4 === 0); }
+        
         function getDaysInJalaliMonth(jy, jm) {
             if (jm <= 6) return 31;
             if (jm <= 11) return 30;
@@ -370,41 +459,215 @@
 
         const todayGreg = new Date();
         const todayJalali = gregorianToJalali(todayGreg.getFullYear(), todayGreg.getMonth() + 1, todayGreg.getDate());
-        
-        // تابع تبدیل به فارسی بدون جداکننده (حذف کاراکتر '٬' در اعداد سال)
         const toFa = (n) => n.toLocaleString('fa-IR', { useGrouping: false });
         
         document.getElementById('todayDate').innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
 
-        let birthdays = JSON.parse(localStorage.getItem('shamsi_birthdays')) || [];
-        let editingId = null;
-        let currentImage = null;
-
-        const nameInput = document.getElementById('nameInput');
-        const daySelect = document.getElementById('daySelect');
-        const monthSelect = document.getElementById('monthSelect');
-        const yearSelect = document.getElementById('yearSelect');
-        const addBtn = document.getElementById('addBtn');
-        const btnText = document.getElementById('btnText');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const birthdayList = document.getElementById('birthdayList');
-        const counterBadge = document.getElementById('counterBadge');
-        const avatarUploadBtn = document.getElementById('avatarUploadBtn');
-        const avatarInput = document.getElementById('avatarInput');
-
-        avatarUploadBtn.addEventListener('click', () => avatarInput.click());
-        avatarInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    currentImage = event.target.result;
-                    avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
-                    avatarUploadBtn.classList.add('has-image');
-                };
-                reader.readAsDataURL(file);
+        // ============================================
+        // توابع احراز هویت (Authentication)
+        // ============================================
+        async function signInWithGoogle() {
+            try {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin + window.location.pathname
+                    }
+                });
+                if (error) throw error;
+                console.log('درخواست ورود با گوگل ارسال شد');
+            } catch (error) {
+                console.error('خطا در ورود:', error.message);
+                alert('خطا در ورود: ' + error.message);
             }
-        });
+        }
+
+        async function signOut() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                currentUser = null;
+                updateAuthUI();
+                birthdays = [];
+                renderList();
+                console.log('خروج موفقیت‌آمیز');
+            } catch (error) {
+                console.error('خطا در خروج:', error.message);
+                alert('خطا در خروج: ' + error.message);
+            }
+        }
+
+        async function getCurrentUser() {
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error) throw error;
+                return user;
+            } catch (error) {
+                console.error('خطا در دریافت کاربر:', error.message);
+                return null;
+            }
+        }
+
+        function updateAuthUI() {
+            const userEmail = document.getElementById('userEmail');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (currentUser) {
+                userEmail.textContent = currentUser.email || 'کاربر وارد شده';
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-flex';
+            } else {
+                userEmail.textContent = 'ورود نکرده‌اید';
+                loginBtn.style.display = 'inline-flex';
+                logoutBtn.style.display = 'none';
+            }
+        }
+
+        // ============================================
+        // توابع عملیات CRUD با Supabase
+        // ============================================
+        async function loadBirthdays() {
+            if (!currentUser) {
+                birthdays = [];
+                renderList();
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('birthdays')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                birthdays = data || [];
+                renderList();
+            } catch (error) {
+                console.error('خطا در دریافت داده‌ها:', error.message);
+                alert('خطا در دریافت داده‌ها: ' + error.message);
+            }
+        }
+
+        async function saveBirthday() {
+            const name = nameInput.value.trim();
+            if (!name) {
+                nameInput.style.borderColor = 'var(--danger)';
+                nameInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+                setTimeout(() => { nameInput.style.borderColor = ''; nameInput.style.boxShadow = ''; }, 1500);
+                return;
+            }
+
+            if (!currentUser) {
+                alert('لطفاً ابتدا وارد شوید.');
+                return;
+            }
+
+            const data = {
+                name: name,
+                year: parseInt(yearSelect.value) || null,
+                month: parseInt(monthSelect.value),
+                day: parseInt(daySelect.value),
+                image: currentImage,
+                user_id: currentUser.id
+            };
+
+            try {
+                const addBtn = document.getElementById('addBtn');
+                addBtn.classList.add('loading');
+                addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
+
+                if (editingId) {
+                    // بروزرسانی
+                    const { error } = await supabase
+                        .from('birthdays')
+                        .update(data)
+                        .eq('id', editingId)
+                        .eq('user_id', currentUser.id);
+
+                    if (error) throw error;
+                } else {
+                    // افزودن جدید
+                    const { error } = await supabase
+                        .from('birthdays')
+                        .insert([data]);
+
+                    if (error) throw error;
+                }
+
+                resetForm();
+                await loadBirthdays();
+            } catch (error) {
+                console.error('خطا در ذخیره‌سازی:', error.message);
+                alert('خطا در ذخیره‌سازی: ' + error.message);
+            } finally {
+                const addBtn = document.getElementById('addBtn');
+                addBtn.classList.remove('loading');
+                addBtn.innerHTML = '<i class="fas fa-plus-circle"></i><span id="btnText">افزودن</span>';
+            }
+        }
+
+        async function deleteBirthday(id) {
+            if (!currentUser) return;
+            
+            if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('birthdays')
+                    .delete()
+                    .eq('id', id)
+                    .eq('user_id', currentUser.id);
+
+                if (error) throw error;
+
+                if (editingId === id) resetForm();
+                await loadBirthdays();
+            } catch (error) {
+                console.error('خطا در حذف:', error.message);
+                alert('خطا در حذف: ' + error.message);
+            }
+        }
+
+        async function editPerson(id) {
+            const person = birthdays.find(b => b.id === id);
+            if (!person) return;
+            
+            editingId = id;
+            nameInput.value = person.name;
+            yearSelect.value = person.year || '';
+            monthSelect.value = person.month;
+            updateDays();
+            daySelect.value = person.day;
+            
+            currentImage = person.image || null;
+            if (currentImage) {
+                avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
+                avatarUploadBtn.classList.add('has-image');
+            } else {
+                resetAvatarUpload();
+            }
+            
+            document.getElementById('btnText').textContent = 'به‌روزرسانی';
+            document.getElementById('addBtn').querySelector('i').className = 'fas fa-check-circle';
+            cancelBtn.style.display = 'flex';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================
+        // توابع UI
+        // ============================================
+        function resetForm() {
+            editingId = null;
+            nameInput.value = '';
+            populateDateSelects();
+            resetAvatarUpload();
+            document.getElementById('btnText').textContent = 'افزودن';
+            document.getElementById('addBtn').querySelector('i').className = 'fas fa-plus-circle';
+            cancelBtn.style.display = 'none';
+        }
 
         function resetAvatarUpload() {
             currentImage = null;
@@ -416,10 +679,11 @@
         function populateDateSelects() {
             const currentJalaliYear = todayJalali.jy;
             yearSelect.innerHTML = '';
+            yearSelect.innerHTML = '<option value="">سال</option>';
             for(let y = currentJalaliYear; y >= currentJalaliYear - 100; y--) {
                 const opt = document.createElement('option');
                 opt.value = y;
-                opt.textContent = toFa(y); // استفاده از تابع بدون جداکننده
+                opt.textContent = toFa(y);
                 yearSelect.appendChild(opt);
             }
 
@@ -438,6 +702,7 @@
             const y = parseInt(yearSelect.value) || todayJalali.jy;
             const daysInMonth = getDaysInJalaliMonth(y, m);
             daySelect.innerHTML = '';
+            daySelect.innerHTML = '<option value="">روز</option>';
             for(let d = 1; d <= daysInMonth; d++) {
                 const opt = document.createElement('option');
                 opt.value = d;
@@ -445,9 +710,6 @@
                 daySelect.appendChild(opt);
             }
         }
-
-        monthSelect.addEventListener('change', updateDays);
-        yearSelect.addEventListener('change', updateDays);
 
         function calculateBirthdayStats(b) {
             const jMonth = b.month;
@@ -478,8 +740,22 @@
 
         function renderList() {
             birthdayList.innerHTML = '';
+            if (!currentUser) {
+                birthdayList.innerHTML = `
+                    <li class="empty-state">
+                        <i class="fas fa-lock"></i>
+                        <p>لطفاً برای مشاهده تولدها وارد شوید</p>
+                    </li>`;
+                counterBadge.textContent = '۰ نفر';
+                return;
+            }
+
             if (birthdays.length === 0) {
-                birthdayList.innerHTML = `<li class="empty-state"><i class="fas fa-calendar-plus"></i><p>هنوز هیچ تولدی ثبت نشده است!</p></li>`;
+                birthdayList.innerHTML = `
+                    <li class="empty-state">
+                        <i class="fas fa-calendar-plus"></i>
+                        <p>هنوز هیچ تولدی ثبت نشده است!</p>
+                    </li>`;
                 counterBadge.textContent = '۰ نفر';
                 return;
             }
@@ -539,10 +815,7 @@
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = e.currentTarget.dataset.id;
-                    birthdays = birthdays.filter(b => b.id !== id);
-                    localStorage.setItem('shamsi_birthdays', JSON.stringify(birthdays));
-                    if(editingId === id) resetForm();
-                    renderList();
+                    deleteBirthday(id);
                 });
             });
 
@@ -554,79 +827,82 @@
             });
         }
 
-        function editPerson(id) {
-            const person = birthdays.find(b => b.id === id);
-            if(!person) return;
-            
-            editingId = id;
-            nameInput.value = person.name;
-            yearSelect.value = person.year;
-            monthSelect.value = person.month;
-            updateDays();
-            daySelect.value = person.day;
-            
-            currentImage = person.image || null;
-            if(currentImage) {
-                avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
-                avatarUploadBtn.classList.add('has-image');
-            } else {
-                resetAvatarUpload();
+        // ============================================
+        // رویدادها (Event Listeners)
+        // ============================================
+        const nameInput = document.getElementById('nameInput');
+        const daySelect = document.getElementById('daySelect');
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
+        const addBtn = document.getElementById('addBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const birthdayList = document.getElementById('birthdayList');
+        const counterBadge = document.getElementById('counterBadge');
+        const avatarUploadBtn = document.getElementById('avatarUploadBtn');
+        const avatarInput = document.getElementById('avatarInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // رویدادهای فرم
+        avatarUploadBtn.addEventListener('click', () => avatarInput.click());
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    currentImage = event.target.result;
+                    avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
+                    avatarUploadBtn.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
             }
-            
-            btnText.textContent = 'به‌روزرسانی';
-            addBtn.querySelector('i').className = 'fas fa-check-circle';
-            cancelBtn.style.display = 'flex';
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        });
 
-        function resetForm() {
-            editingId = null;
-            nameInput.value = '';
-            populateDateSelects();
-            resetAvatarUpload();
-            btnText.textContent = 'افزودن';
-            addBtn.querySelector('i').className = 'fas fa-plus-circle';
-            cancelBtn.style.display = 'none';
-        }
-
+        monthSelect.addEventListener('change', updateDays);
+        yearSelect.addEventListener('change', updateDays);
         cancelBtn.addEventListener('click', resetForm);
-
-        function saveBirthday() {
-            const name = nameInput.value.trim();
-            if(!name) {
-                nameInput.style.borderColor = 'var(--danger)';
-                nameInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
-                setTimeout(() => { nameInput.style.borderColor = ''; nameInput.style.boxShadow = ''; }, 1500);
-                return;
-            }
-
-            const data = {
-                name,
-                year: parseInt(yearSelect.value),
-                month: parseInt(monthSelect.value),
-                day: parseInt(daySelect.value),
-                image: currentImage
-            };
-
-            if(editingId) {
-                const index = birthdays.findIndex(b => b.id === editingId);
-                if(index !== -1) birthdays[index] = { ...birthdays[index], ...data };
-            } else {
-                data.id = Date.now().toString();
-                birthdays.push(data);
-            }
-
-            localStorage.setItem('shamsi_birthdays', JSON.stringify(birthdays));
-            resetForm();
-            renderList();
-        }
-
         addBtn.addEventListener('click', saveBirthday);
         nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') saveBirthday(); });
 
-        populateDateSelects();
-        renderList();
+        // رویدادهای احراز هویت
+        loginBtn.addEventListener('click', signInWithGoogle);
+        logoutBtn.addEventListener('click', signOut);
+
+        // ============================================
+        // راه‌اندازی اولیه
+        // ============================================
+        async function initApp() {
+            // دریافت کاربر فعلی
+            currentUser = await getCurrentUser();
+            updateAuthUI();
+
+            // تنظیم شنونده برای تغییرات وضعیت احراز هویت
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log('تغییر وضعیت احراز هویت:', event);
+                if (event === 'SIGNED_IN' && session) {
+                    currentUser = session.user;
+                    updateAuthUI();
+                    loadBirthdays();
+                } else if (event === 'SIGNED_OUT') {
+                    currentUser = null;
+                    updateAuthUI();
+                    birthdays = [];
+                    renderList();
+                }
+            });
+
+            // اگر کاربر وارد شده، داده‌ها را بارگذاری کن
+            if (currentUser) {
+                await loadBirthdays();
+            }
+
+            // مقداردهی اولیه فرم
+            populateDateSelects();
+            renderList();
+        }
+
+        // اجرای برنامه
+        initApp();
     </script>
 </body>
 </html>
