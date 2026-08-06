@@ -243,7 +243,6 @@
         .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 12px; }
         .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* استایل جدید برای لاگین */
         .auth-section {
             margin-bottom: 20px;
             padding: 16px;
@@ -328,11 +327,10 @@
             </div>
         </div>
 
-        <!-- بخش احراز هویت -->
         <div class="auth-section" id="authSection">
             <div class="user-info" id="userInfo">
                 <i class="fas fa-user-circle" style="font-size: 1.5rem; color: var(--accent-1);"></i>
-                <span class="email" id="userEmail">بررسی وضعیت ورود...</span>
+                <span class="email" id="userEmail">ورود نکرده‌اید</span>
             </div>
             <div>
                 <button class="btn-auth btn-login" id="loginBtn">
@@ -391,22 +389,6 @@
 
     <script>
         // ============================================
-        // 🎯 تعریف متغیرهای DOM در بالاترین سطح (رفع خطای ReferenceError)
-        // ============================================
-        const nameInput = document.getElementById('nameInput');
-        const daySelect = document.getElementById('daySelect');
-        const monthSelect = document.getElementById('monthSelect');
-        const yearSelect = document.getElementById('yearSelect');
-        const addBtn = document.getElementById('addBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const birthdayList = document.getElementById('birthdayList');
-        const counterBadge = document.getElementById('counterBadge');
-        const avatarUploadBtn = document.getElementById('avatarUploadBtn');
-        const avatarInput = document.getElementById('avatarInput');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        // ============================================
         // 🔑 تنظیمات Supabase
         // ============================================
         const SUPABASE_CONFIG = {
@@ -414,16 +396,10 @@
             anonKey: 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc'
         };
 
-        let _supabase = null;
-        try {
-            if (typeof supabase !== 'undefined') {
-                _supabase = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-            } else {
-                console.error('❌ کتابخانه Supabase بارگذاری نشده است!');
-            }
-        } catch (error) {
-            console.error('❌ خطا در راه‌اندازی Supabase:', error.message);
-        }
+        // ============================================
+        // 🚀 راه‌اندازی کلاینت Supabase
+        // ============================================
+        const supabase = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
         // ============================================
         // 📦 متغیرهای عمومی
@@ -435,14 +411,8 @@
         let currentUser = null;
 
         // ============================================
-        // 📅 توابع تبدیل تاریخ شمسی (کاملا مستقل و بدون نیاز به API مرورگر)
+        // 📅 توابع تبدیل تاریخ شمسی
         // ============================================
-        function toFa(num) {
-            if (num === null || num === undefined) return '';
-            const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-            return String(num).replace(/[0-9]/g, (d) => faDigits[d]);
-        }
-
         function isLeapJalaliYear(jy) { return ((jy % 33 + 3) % 4 === 0); }
         
         function getDaysInJalaliMonth(jy, jm) {
@@ -486,19 +456,23 @@
 
         const todayGreg = new Date();
         const todayJalali = gregorianToJalali(todayGreg.getFullYear(), todayGreg.getMonth() + 1, todayGreg.getDate());
+        const toFa = (n) => n.toLocaleString('fa-IR', { useGrouping: false });
+        
         document.getElementById('todayDate').innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
 
         // ============================================
         // 🔐 توابع احراز هویت
         // ============================================
         async function signInWithGoogle() {
-            if (!_supabase) return alert('سرویس احراز هویت در دسترس نیست.');
             try {
-                const { data, error } = await _supabase.auth.signInWithOAuth({
+                const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
-                    options: { redirectTo: window.location.origin + window.location.pathname }
+                    options: {
+                        redirectTo: window.location.origin + window.location.pathname
+                    }
                 });
                 if (error) throw error;
+                console.log('✅ درخواست ورود با گوگل ارسال شد');
             } catch (error) {
                 console.error('❌ خطا در ورود:', error.message);
                 alert('خطا در ورود: ' + error.message);
@@ -506,14 +480,14 @@
         }
 
         async function signOut() {
-            if (!_supabase) return;
             try {
-                const { error } = await _supabase.auth.signOut();
+                const { error } = await supabase.auth.signOut();
                 if (error) throw error;
                 currentUser = null;
                 updateAuthUI();
                 birthdays = [];
                 renderList();
+                console.log('✅ خروج موفقیت‌آمیز');
             } catch (error) {
                 console.error('❌ خطا در خروج:', error.message);
                 alert('خطا در خروج: ' + error.message);
@@ -521,9 +495,8 @@
         }
 
         async function getCurrentUser() {
-            if (!_supabase) return null;
             try {
-                const { data: { user }, error } = await _supabase.auth.getUser();
+                const { data: { user }, error } = await supabase.auth.getUser();
                 if (error) throw error;
                 return user;
             } catch (error) {
@@ -534,12 +507,8 @@
 
         function updateAuthUI() {
             const userEmail = document.getElementById('userEmail');
-            if (!_supabase) {
-                userEmail.textContent = 'خطا در اتصال به سرور';
-                loginBtn.style.display = 'none';
-                logoutBtn.style.display = 'none';
-                return;
-            }
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
 
             if (currentUser) {
                 userEmail.textContent = currentUser.email || 'کاربر وارد شده';
@@ -556,14 +525,14 @@
         // 💾 توابع عملیات CRUD با Supabase
         // ============================================
         async function loadBirthdays() {
-            if (!_supabase || !currentUser) {
+            if (!currentUser) {
                 birthdays = [];
                 renderList();
                 return;
             }
 
             try {
-                const { data, error } = await _supabase
+                const { data, error } = await supabase
                     .from('app_birthdayreminder.birthdays')
                     .select('*')
                     .eq('user_id', currentUser.id)
@@ -572,6 +541,7 @@
                 if (error) throw error;
                 birthdays = data || [];
                 renderList();
+                console.log(`✅ ${birthdays.length} تولد بارگذاری شد`);
             } catch (error) {
                 console.error('❌ خطا در دریافت داده‌ها:', error.message);
                 alert('خطا در دریافت داده‌ها: ' + error.message);
@@ -587,43 +557,48 @@
                 return;
             }
 
-            if (!monthSelect.value || !daySelect.value) {
-                alert('لطفاً ماه و روز تولد را انتخاب کنید.');
+            if (!currentUser) {
+                alert('لطفاً ابتدا وارد شوید.');
                 return;
             }
 
-            if (!currentUser) {
-                alert('لطفاً ابتدا وارد شوید.');
+            const day = parseInt(daySelect.value);
+            const month = parseInt(monthSelect.value);
+            if (!day || !month) {
+                alert('لطفاً روز و ماه را انتخاب کنید.');
                 return;
             }
 
             const data = {
                 name: name,
                 year: parseInt(yearSelect.value) || null,
-                month: parseInt(monthSelect.value),
-                day: parseInt(daySelect.value),
+                month: month,
+                day: day,
                 image: currentImage,
                 user_id: currentUser.id
             };
 
             try {
+                const addBtn = document.getElementById('addBtn');
                 addBtn.classList.add('loading');
                 addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
 
                 if (editingId) {
-                    const { error } = await _supabase
+                    const { error } = await supabase
                         .from('app_birthdayreminder.birthdays')
                         .update(data)
                         .eq('id', editingId)
                         .eq('user_id', currentUser.id);
 
                     if (error) throw error;
+                    console.log('✅ تولد بروزرسانی شد');
                 } else {
-                    const { error } = await _supabase
+                    const { error } = await supabase
                         .from('app_birthdayreminder.birthdays')
                         .insert([data]);
 
                     if (error) throw error;
+                    console.log('✅ تولد جدید اضافه شد');
                 }
 
                 resetForm();
@@ -632,18 +607,19 @@
                 console.error('❌ خطا در ذخیره‌سازی:', error.message);
                 alert('خطا در ذخیره‌سازی: ' + error.message);
             } finally {
+                const addBtn = document.getElementById('addBtn');
                 addBtn.classList.remove('loading');
                 addBtn.innerHTML = '<i class="fas fa-plus-circle"></i><span id="btnText">افزودن</span>';
             }
         }
 
         async function deleteBirthday(id) {
-            if (!currentUser || !_supabase) return;
+            if (!currentUser) return;
             
             if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
 
             try {
-                const { error } = await _supabase
+                const { error } = await supabase
                     .from('app_birthdayreminder.birthdays')
                     .delete()
                     .eq('id', id)
@@ -653,6 +629,7 @@
 
                 if (editingId === id) resetForm();
                 await loadBirthdays();
+                console.log('✅ تولد حذف شد');
             } catch (error) {
                 console.error('❌ خطا در حذف:', error.message);
                 alert('خطا در حذف: ' + error.message);
@@ -679,22 +656,22 @@
             }
             
             document.getElementById('btnText').textContent = 'به‌روزرسانی';
-            addBtn.querySelector('i').className = 'fas fa-check-circle';
+            document.getElementById('addBtn').querySelector('i').className = 'fas fa-check-circle';
             cancelBtn.style.display = 'flex';
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ============================================
-        // 🎨 توابع UI
+        // 🎨 توابع UI - اصلاح شده نهایی
         // ============================================
         function resetForm() {
             editingId = null;
             nameInput.value = '';
-            populateDateSelects();
+            setDefaultDateValues();
             resetAvatarUpload();
             document.getElementById('btnText').textContent = 'افزودن';
-            addBtn.querySelector('i').className = 'fas fa-plus-circle';
+            document.getElementById('addBtn').querySelector('i').className = 'fas fa-plus-circle';
             cancelBtn.style.display = 'none';
         }
 
@@ -705,10 +682,23 @@
             avatarUploadBtn.classList.remove('has-image');
         }
 
+        function setDefaultDateValues() {
+            yearSelect.value = todayJalali.jy;
+            monthSelect.value = todayJalali.jm;
+            updateDays();
+            daySelect.value = todayJalali.jd;
+        }
+
         function populateDateSelects() {
             const currentJalaliYear = todayJalali.jy;
             
-            yearSelect.innerHTML = '<option value="">سال</option>';
+            // مقداردهی سال
+            yearSelect.innerHTML = '';
+            const yearDefault = document.createElement('option');
+            yearDefault.value = '';
+            yearDefault.textContent = 'سال';
+            yearSelect.appendChild(yearDefault);
+            
             for(let y = currentJalaliYear; y >= currentJalaliYear - 100; y--) {
                 const opt = document.createElement('option');
                 opt.value = y;
@@ -716,39 +706,61 @@
                 yearSelect.appendChild(opt);
             }
 
+            // مقداردهی ماه
             monthSelect.innerHTML = '';
+            const monthDefault = document.createElement('option');
+            monthDefault.value = '';
+            monthDefault.textContent = 'ماه';
+            monthSelect.appendChild(monthDefault);
+            
             persianMonths.forEach((m, i) => {
                 const opt = document.createElement('option');
                 opt.value = i + 1;
                 opt.textContent = m;
                 monthSelect.appendChild(opt);
             });
-            
-            updateDays();
+
+            // مقداردهی روز
+            daySelect.innerHTML = '';
+            const dayDefault = document.createElement('option');
+            dayDefault.value = '';
+            dayDefault.textContent = 'روز';
+            daySelect.appendChild(dayDefault);
+
+            // تنظیم مقادیر پیش‌فرض به امروز
+            setDefaultDateValues();
         }
 
         function updateDays() {
-            const m = parseInt(monthSelect.value) || 1;
+            const m = parseInt(monthSelect.value);
             const y = parseInt(yearSelect.value) || todayJalali.jy;
-            const daysInMonth = getDaysInJalaliMonth(y, m);
-            const previousDay = daySelect.value;
             
-            daySelect.innerHTML = '<option value="">روز</option>';
+            if (!m || m === 0) {
+                daySelect.innerHTML = '';
+                const dayDefault = document.createElement('option');
+                dayDefault.value = '';
+                dayDefault.textContent = 'روز';
+                daySelect.appendChild(dayDefault);
+                return;
+            }
+            
+            const daysInMonth = getDaysInJalaliMonth(y, m);
+            daySelect.innerHTML = '';
+            
+            const dayDefault = document.createElement('option');
+            dayDefault.value = '';
+            dayDefault.textContent = 'روز';
+            daySelect.appendChild(dayDefault);
+            
             for(let d = 1; d <= daysInMonth; d++) {
                 const opt = document.createElement('option');
                 opt.value = d;
                 opt.textContent = toFa(d);
                 daySelect.appendChild(opt);
             }
-            
-            if (previousDay && parseInt(previousDay) <= daysInMonth) {
-                daySelect.value = previousDay;
-            }
         }
 
         function calculateBirthdayStats(b) {
-            if (!b.month || !b.day) return { daysLeft: null, upcomingAge: null };
-            
             const jMonth = b.month;
             const jDay = b.day;
             let gBdayThisYear = jalaliToGregorian(todayJalali.jy, jMonth, jDay);
@@ -777,21 +789,11 @@
 
         function renderList() {
             birthdayList.innerHTML = '';
-            if (!_supabase) {
-                birthdayList.innerHTML = `
-                    <li class="empty-state">
-                        <i class="fas fa-wifi"></i>
-                        <p>اتصال به سرور برقرار نشد. اتصال اینترنت را بررسی کنید.</p>
-                    </li>`;
-                counterBadge.textContent = '۰ نفر';
-                return;
-            }
-
             if (!currentUser) {
                 birthdayList.innerHTML = `
                     <li class="empty-state">
                         <i class="fas fa-lock"></i>
-                        <p>لطفاً برای مشاهده و ثبت تولدها وارد شوید</p>
+                        <p>لطفاً برای مشاهده تولدها وارد شوید</p>
                     </li>`;
                 counterBadge.textContent = '۰ نفر';
                 return;
@@ -810,7 +812,7 @@
             const sorted = birthdays.map((item) => {
                 const stats = calculateBirthdayStats(item);
                 return { ...item, ...stats };
-            }).sort((a, b) => (a.daysLeft || 9999) - (b.daysLeft || 9999));
+            }).sort((a, b) => a.daysLeft - b.daysLeft);
 
             counterBadge.textContent = `${toFa(birthdays.length)} نفر`;
 
@@ -829,10 +831,8 @@
                 } else if(item.daysLeft <= 7) {
                     badgeClass += ' soon';
                     badgeText = `<i class="fas fa-hourglass-half"></i> ${toFa(item.daysLeft)} روز`;
-                } else if (item.daysLeft > 7) {
-                    badgeText = `<i class="far fa-clock"></i> ${toFa(item.daysLeft)} روز`;
                 } else {
-                    badgeText = `<i class="fas fa-calendar-times"></i> ناقص`;
+                    badgeText = `<i class="far fa-clock"></i> ${toFa(item.daysLeft)} روز`;
                 }
 
                 const dateText = `${toFa(item.day)} ${persianMonths[item.month-1]} ${item.year ? toFa(item.year) : ''}`;
@@ -879,6 +879,19 @@
         // ============================================
         // 🎯 رویدادها (Event Listeners)
         // ============================================
+        const nameInput = document.getElementById('nameInput');
+        const daySelect = document.getElementById('daySelect');
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
+        const addBtn = document.getElementById('addBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const birthdayList = document.getElementById('birthdayList');
+        const counterBadge = document.getElementById('counterBadge');
+        const avatarUploadBtn = document.getElementById('avatarUploadBtn');
+        const avatarInput = document.getElementById('avatarInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
         avatarUploadBtn.addEventListener('click', () => avatarInput.click());
         avatarInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -906,23 +919,10 @@
         // 🚀 راه‌اندازی اولیه
         // ============================================
         async function initApp() {
-            // 1. اول از همه تقویم را می‌سازیم
-            populateDateSelects();
-            updateAuthUI();
-            renderList();
-
-            // 2. بررسی اتصال Supabase
-            if (!_supabase) {
-                console.warn('⚠️ برنامه بدون اتصال به Supabase اجرا شد.');
-                return;
-            }
-
-            // 3. بررسی وضعیت کاربر
             currentUser = await getCurrentUser();
             updateAuthUI();
 
-            // 4. گوش دادن به تغییرات احراز هویت
-            _supabase.auth.onAuthStateChange((event, session) => {
+            supabase.auth.onAuthStateChange((event, session) => {
                 console.log('🔄 تغییر وضعیت احراز هویت:', event);
                 if (event === 'SIGNED_IN' && session) {
                     currentUser = session.user;
@@ -936,13 +936,16 @@
                 }
             });
 
-            // 5. بارگذاری اطلاعات اگر کاربر لاگین کرده باشد
             if (currentUser) {
                 await loadBirthdays();
             }
+
+            populateDateSelects();
+            renderList();
+            
+            console.log('🎂 برنامه تولدیار با موفقیت راه‌اندازی شد!');
         }
 
-        // اجرای برنامه
         initApp();
     </script>
 </body>
