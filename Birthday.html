@@ -243,51 +243,6 @@
         .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 12px; }
         .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
 
-        .auth-section {
-            margin-bottom: 20px;
-            padding: 16px;
-            background: var(--bg-input);
-            border-radius: 16px;
-            border: 1px solid var(--border-light);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .auth-section .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .auth-section .user-info .email {
-            font-weight: 600;
-            color: var(--text-main);
-        }
-        .auth-section .btn-auth {
-            padding: 8px 20px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Vazirmatn', sans-serif;
-            font-size: 0.9rem;
-        }
-        .btn-login {
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            color: white;
-        }
-        .btn-login:hover {
-            transform: scale(1.05);
-        }
-        .btn-logout {
-            background: #f1f5f9;
-            color: var(--text-muted);
-        }
-        .btn-logout:hover {
-            background: #e2e8f0;
-        }
         .loading {
             opacity: 0.6;
             pointer-events: none;
@@ -301,7 +256,6 @@
             .btn-add, .btn-cancel { width: 100%; }
             .birthday-item { flex-direction: column; align-items: flex-start; gap: 12px; }
             .item-right { width: 100%; justify-content: space-between; }
-            .auth-section { flex-direction: column; align-items: stretch; text-align: center; }
         }
     </style>
 </head>
@@ -324,21 +278,6 @@
             <div class="header-sub">
                 <i class="fas fa-bell"></i>
                 <span id="todayDate">امروز: -</span>
-            </div>
-        </div>
-
-        <div class="auth-section" id="authSection">
-            <div class="user-info" id="userInfo">
-                <i class="fas fa-user-circle" style="font-size: 1.5rem; color: var(--accent-1);"></i>
-                <span class="email" id="userEmail">وارد نشده‌اید</span>
-            </div>
-            <div>
-                <button class="btn-auth btn-login" id="loginBtn" style="display:none;">
-                    <i class="fas fa-sign-in-alt"></i> ورود با گوگل
-                </button>
-                <button class="btn-auth btn-logout" id="logoutBtn" style="display:none;">
-                    <i class="fas fa-sign-out-alt"></i> خروج
-                </button>
             </div>
         </div>
 
@@ -405,8 +344,6 @@
         const counterBadge = document.getElementById('counterBadge');
         const avatarUploadBtn = document.getElementById('avatarUploadBtn');
         const avatarInput = document.getElementById('avatarInput');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
 
         // ============================================
         // 🔑 تنظیمات Supabase
@@ -432,7 +369,6 @@
         let birthdays = [];
         let editingId = null;
         let currentImage = null;
-        let currentUser = null;
 
         // ============================================
         // 📅 توابع تبدیل تاریخ شمسی
@@ -487,28 +423,6 @@
         const todayGreg = new Date();
         const todayJalali = gregorianToJalali(todayGreg.getFullYear(), todayGreg.getMonth() + 1, todayGreg.getDate());
         document.getElementById('todayDate').innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
-
-        // ============================================
-        // 🔐 توابع احراز هویت (غیرفعال)
-        // ============================================
-        async function signInWithGoogle() {
-            // این تابع غیرفعال شده است
-        }
-
-        async function signOut() {
-            // این تابع غیرفعال شده است
-        }
-
-        async function getCurrentUser() {
-            return null;
-        }
-
-        function updateAuthUI() {
-            // دکمه‌های ورود و خروج مخفی می‌شوند
-            loginBtn.style.display = 'none';
-            logoutBtn.style.display = 'none';
-            document.getElementById('userEmail').textContent = 'ورود غیرفعال است';
-        }
 
         // ============================================
         // 💾 توابع عملیات CRUD با Supabase
@@ -848,7 +762,6 @@
         async function initApp() {
             // مقداردهی اولیه تقویم و UI
             populateDateSelects();
-            updateAuthUI();
             renderList();
 
             // بارگذاری اطلاعات از دیتابیس
