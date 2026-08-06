@@ -9,8 +9,8 @@
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <!-- آیکون‌ها -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- کتابخانه Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- کتابخانه Supabase با defer لود می‌شود تا جلوی اجرای کدها را نگیرد -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
     <style>
         :root {
@@ -390,8 +390,8 @@
     </div>
 
     <script>
-    // بسته‌بندی کل کدها در یک تابع ایزوله برای جلوگیری از خطای redeclaration سراسری
-    (function() {
+    // اجرای کدها پس از لود کامل صفحه
+    window.addEventListener('DOMContentLoaded', function() {
         "use strict";
 
         // ============================================
@@ -948,7 +948,7 @@
         // اجرای برنامه
         initApp();
 
-    })(); // پایان تابع ایزوله
+    });
     </script>
 </body>
 </html>
