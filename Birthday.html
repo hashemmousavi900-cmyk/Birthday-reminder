@@ -13,7 +13,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* استایل‌های شما بدون تغییر باقی می‌مانند */
         :root {
             --bg-main: #ecfdf5;
             --bg-card: #a7f3d0;
@@ -392,6 +391,22 @@
 
     <script>
         // ============================================
+        // 🎯 تعریف متغیرهای DOM در بالاترین سطح (رفع خطای ReferenceError)
+        // ============================================
+        const nameInput = document.getElementById('nameInput');
+        const daySelect = document.getElementById('daySelect');
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
+        const addBtn = document.getElementById('addBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const birthdayList = document.getElementById('birthdayList');
+        const counterBadge = document.getElementById('counterBadge');
+        const avatarUploadBtn = document.getElementById('avatarUploadBtn');
+        const avatarInput = document.getElementById('avatarInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // ============================================
         // 🔑 تنظیمات Supabase
         // ============================================
         const SUPABASE_CONFIG = {
@@ -399,9 +414,6 @@
             anonKey: 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc'
         };
 
-        // ============================================
-        // 🚀 راه‌اندازی ایمن کلاینت Supabase
-        // ============================================
         let _supabase = null;
         try {
             if (typeof supabase !== 'undefined') {
@@ -423,8 +435,14 @@
         let currentUser = null;
 
         // ============================================
-        // 📅 توابع تبدیل تاریخ شمسی
+        // 📅 توابع تبدیل تاریخ شمسی (کاملا مستقل و بدون نیاز به API مرورگر)
         // ============================================
+        function toFa(num) {
+            if (num === null || num === undefined) return '';
+            const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return String(num).replace(/[0-9]/g, (d) => faDigits[d]);
+        }
+
         function isLeapJalaliYear(jy) { return ((jy % 33 + 3) % 4 === 0); }
         
         function getDaysInJalaliMonth(jy, jm) {
@@ -468,29 +486,17 @@
 
         const todayGreg = new Date();
         const todayJalali = gregorianToJalali(todayGreg.getFullYear(), todayGreg.getMonth() + 1, todayGreg.getDate());
-        
-        // تابع ایمن ساز برای تبدیل اعداد به فارسی
-        const toFa = (n) => {
-            try {
-                return n.toLocaleString('fa-IR', { useGrouping: false });
-            } catch (e) {
-                return n.toString(); // در صورت عدم پشتیبانی مرورگر
-            }
-        };
-        
         document.getElementById('todayDate').innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
 
         // ============================================
-        // 🔐 توابع احراز هویت (Authentication)
+        // 🔐 توابع احراز هویت
         // ============================================
         async function signInWithGoogle() {
             if (!_supabase) return alert('سرویس احراز هویت در دسترس نیست.');
             try {
                 const { data, error } = await _supabase.auth.signInWithOAuth({
                     provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin + window.location.pathname
-                    }
+                    options: { redirectTo: window.location.origin + window.location.pathname }
                 });
                 if (error) throw error;
             } catch (error) {
@@ -528,9 +534,6 @@
 
         function updateAuthUI() {
             const userEmail = document.getElementById('userEmail');
-            const loginBtn = document.getElementById('loginBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-
             if (!_supabase) {
                 userEmail.textContent = 'خطا در اتصال به سرور';
                 loginBtn.style.display = 'none';
@@ -604,7 +607,6 @@
             };
 
             try {
-                const addBtn = document.getElementById('addBtn');
                 addBtn.classList.add('loading');
                 addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
 
@@ -630,7 +632,6 @@
                 console.error('❌ خطا در ذخیره‌سازی:', error.message);
                 alert('خطا در ذخیره‌سازی: ' + error.message);
             } finally {
-                const addBtn = document.getElementById('addBtn');
                 addBtn.classList.remove('loading');
                 addBtn.innerHTML = '<i class="fas fa-plus-circle"></i><span id="btnText">افزودن</span>';
             }
@@ -666,7 +667,7 @@
             nameInput.value = person.name;
             yearSelect.value = person.year || '';
             monthSelect.value = person.month;
-            updateDays(); // اجرا برای تنظیم روزهای ماه
+            updateDays();
             daySelect.value = person.day;
             
             currentImage = person.image || null;
@@ -678,7 +679,7 @@
             }
             
             document.getElementById('btnText').textContent = 'به‌روزرسانی';
-            document.getElementById('addBtn').querySelector('i').className = 'fas fa-check-circle';
+            addBtn.querySelector('i').className = 'fas fa-check-circle';
             cancelBtn.style.display = 'flex';
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -693,7 +694,7 @@
             populateDateSelects();
             resetAvatarUpload();
             document.getElementById('btnText').textContent = 'افزودن';
-            document.getElementById('addBtn').querySelector('i').className = 'fas fa-plus-circle';
+            addBtn.querySelector('i').className = 'fas fa-plus-circle';
             cancelBtn.style.display = 'none';
         }
 
@@ -730,7 +731,7 @@
             const m = parseInt(monthSelect.value) || 1;
             const y = parseInt(yearSelect.value) || todayJalali.jy;
             const daysInMonth = getDaysInJalaliMonth(y, m);
-            const previousDay = daySelect.value; // حفظ روز انتخاب شده
+            const previousDay = daySelect.value;
             
             daySelect.innerHTML = '<option value="">روز</option>';
             for(let d = 1; d <= daysInMonth; d++) {
@@ -740,7 +741,6 @@
                 daySelect.appendChild(opt);
             }
             
-            // بازگرداندن روز انتخاب شده اگر معتبر باشد
             if (previousDay && parseInt(previousDay) <= daysInMonth) {
                 daySelect.value = previousDay;
             }
@@ -879,19 +879,6 @@
         // ============================================
         // 🎯 رویدادها (Event Listeners)
         // ============================================
-        const nameInput = document.getElementById('nameInput');
-        const daySelect = document.getElementById('daySelect');
-        const monthSelect = document.getElementById('monthSelect');
-        const yearSelect = document.getElementById('yearSelect');
-        const addBtn = document.getElementById('addBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const birthdayList = document.getElementById('birthdayList');
-        const counterBadge = document.getElementById('counterBadge');
-        const avatarUploadBtn = document.getElementById('avatarUploadBtn');
-        const avatarInput = document.getElementById('avatarInput');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-
         avatarUploadBtn.addEventListener('click', () => avatarInput.click());
         avatarInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -919,7 +906,7 @@
         // 🚀 راه‌اندازی اولیه
         // ============================================
         async function initApp() {
-            // 1. اول از همه تقویم را می‌سازیم تا تحت هیچ شرایطی خالی نماند
+            // 1. اول از همه تقویم را می‌سازیم
             populateDateSelects();
             updateAuthUI();
             renderList();
@@ -953,8 +940,6 @@
             if (currentUser) {
                 await loadBirthdays();
             }
-            
-            console.log('🎂 برنامه تولدیار آماده است!');
         }
 
         // اجرای برنامه
