@@ -243,7 +243,6 @@
         .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 12px; }
         .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* استایل جدید برای لاگین */
         .auth-section {
             margin-bottom: 20px;
             padding: 16px;
@@ -328,14 +327,13 @@
             </div>
         </div>
 
-        <!-- بخش احراز هویت -->
         <div class="auth-section" id="authSection">
             <div class="user-info" id="userInfo">
                 <i class="fas fa-user-circle" style="font-size: 1.5rem; color: var(--accent-1);"></i>
-                <span class="email" id="userEmail">بررسی وضعیت ورود...</span>
+                <span class="email" id="userEmail">وارد نشده‌اید</span>
             </div>
             <div>
-                <button class="btn-auth btn-login" id="loginBtn">
+                <button class="btn-auth btn-login" id="loginBtn" style="display:none;">
                     <i class="fas fa-sign-in-alt"></i> ورود با گوگل
                 </button>
                 <button class="btn-auth btn-logout" id="logoutBtn" style="display:none;">
@@ -422,11 +420,9 @@
         try {
             if (window.supabase) {
                 dbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-            } else {
-                console.error('❌ کتابخانه Supabase بارگذاری نشده است!');
             }
         } catch (error) {
-            console.error('❌ خطا در راه‌اندازی Supabase:', error.message);
+            // خطا در راه‌اندازی Supabase
         }
 
         // ============================================
@@ -493,74 +489,32 @@
         document.getElementById('todayDate').innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
 
         // ============================================
-        // 🔐 توابع احراز هویت
+        // 🔐 توابع احراز هویت (غیرفعال)
         // ============================================
         async function signInWithGoogle() {
-            if (!dbClient) return alert('سرویس احراز هویت در دسترس نیست.');
-            try {
-                const { data, error } = await dbClient.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: { redirectTo: window.location.origin + window.location.pathname }
-                });
-                if (error) throw error;
-            } catch (error) {
-                console.error('❌ خطا در ورود:', error.message);
-                alert('خطا در ورود: ' + error.message);
-            }
+            // این تابع غیرفعال شده است
         }
 
         async function signOut() {
-            if (!dbClient) return;
-            try {
-                const { error } = await dbClient.auth.signOut();
-                if (error) throw error;
-                currentUser = null;
-                updateAuthUI();
-                birthdays = [];
-                renderList();
-            } catch (error) {
-                console.error('❌ خطا در خروج:', error.message);
-                alert('خطا در خروج: ' + error.message);
-            }
+            // این تابع غیرفعال شده است
         }
 
         async function getCurrentUser() {
-            if (!dbClient) return null;
-            try {
-                const { data: { user }, error } = await dbClient.auth.getUser();
-                if (error) throw error;
-                return user;
-            } catch (error) {
-                console.error('❌ خطا در دریافت کاربر:', error.message);
-                return null;
-            }
+            return null;
         }
 
         function updateAuthUI() {
-            const userEmail = document.getElementById('userEmail');
-            if (!dbClient) {
-                userEmail.textContent = 'خطا در اتصال به سرور';
-                loginBtn.style.display = 'none';
-                logoutBtn.style.display = 'none';
-                return;
-            }
-
-            if (currentUser) {
-                userEmail.textContent = currentUser.email || 'کاربر وارد شده';
-                loginBtn.style.display = 'none';
-                logoutBtn.style.display = 'inline-flex';
-            } else {
-                userEmail.textContent = 'ورود نکرده‌اید';
-                loginBtn.style.display = 'inline-flex';
-                logoutBtn.style.display = 'none';
-            }
+            // دکمه‌های ورود و خروج مخفی می‌شوند
+            loginBtn.style.display = 'none';
+            logoutBtn.style.display = 'none';
+            document.getElementById('userEmail').textContent = 'ورود غیرفعال است';
         }
 
         // ============================================
         // 💾 توابع عملیات CRUD با Supabase
         // ============================================
         async function loadBirthdays() {
-            if (!dbClient || !currentUser) {
+            if (!dbClient) {
                 birthdays = [];
                 renderList();
                 return;
@@ -570,15 +524,14 @@
                 const { data, error } = await dbClient
                     .from('app_birthdayreminder.birthdays')
                     .select('*')
-                    .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
                 birthdays = data || [];
                 renderList();
             } catch (error) {
-                console.error('❌ خطا در دریافت داده‌ها:', error.message);
-                alert('خطا در دریافت داده‌ها: ' + error.message);
+                birthdays = [];
+                renderList();
             }
         }
 
@@ -596,18 +549,12 @@
                 return;
             }
 
-            if (!currentUser) {
-                alert('لطفاً ابتدا وارد شوید.');
-                return;
-            }
-
             const data = {
                 name: name,
                 year: parseInt(yearSelect.value) || null,
                 month: parseInt(monthSelect.value),
                 day: parseInt(daySelect.value),
-                image: currentImage,
-                user_id: currentUser.id
+                image: currentImage
             };
 
             try {
@@ -618,8 +565,7 @@
                     const { error } = await dbClient
                         .from('app_birthdayreminder.birthdays')
                         .update(data)
-                        .eq('id', editingId)
-                        .eq('user_id', currentUser.id);
+                        .eq('id', editingId);
 
                     if (error) throw error;
                 } else {
@@ -633,7 +579,6 @@
                 resetForm();
                 await loadBirthdays();
             } catch (error) {
-                console.error('❌ خطا در ذخیره‌سازی:', error.message);
                 alert('خطا در ذخیره‌سازی: ' + error.message);
             } finally {
                 addBtn.classList.remove('loading');
@@ -642,7 +587,7 @@
         }
 
         async function deleteBirthday(id) {
-            if (!currentUser || !dbClient) return;
+            if (!dbClient) return;
             
             if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
 
@@ -650,15 +595,13 @@
                 const { error } = await dbClient
                     .from('app_birthdayreminder.birthdays')
                     .delete()
-                    .eq('id', id)
-                    .eq('user_id', currentUser.id);
+                    .eq('id', id);
 
                 if (error) throw error;
 
                 if (editingId === id) resetForm();
                 await loadBirthdays();
             } catch (error) {
-                console.error('❌ خطا در حذف:', error.message);
                 alert('خطا در حذف: ' + error.message);
             }
         }
@@ -729,6 +672,12 @@
             });
             
             updateDays();
+            
+            // تنظیم مقادیر پیش‌فرض به امروز
+            yearSelect.value = todayJalali.jy;
+            monthSelect.value = todayJalali.jm;
+            updateDays();
+            daySelect.value = todayJalali.jd;
         }
 
         function updateDays() {
@@ -785,17 +734,7 @@
                 birthdayList.innerHTML = `
                     <li class="empty-state">
                         <i class="fas fa-wifi"></i>
-                        <p>اتصال به سرور برقرار نشد. اتصال اینترنت را بررسی کنید.</p>
-                    </li>`;
-                counterBadge.textContent = '۰ نفر';
-                return;
-            }
-
-            if (!currentUser) {
-                birthdayList.innerHTML = `
-                    <li class="empty-state">
-                        <i class="fas fa-lock"></i>
-                        <p>لطفاً برای مشاهده و ثبت تولدها وارد شوید</p>
+                        <p>اتصال به سرور برقرار نشد.</p>
                     </li>`;
                 counterBadge.textContent = '۰ نفر';
                 return;
@@ -903,44 +842,17 @@
         addBtn.addEventListener('click', saveBirthday);
         nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') saveBirthday(); });
 
-        loginBtn.addEventListener('click', signInWithGoogle);
-        logoutBtn.addEventListener('click', signOut);
-
         // ============================================
         // 🚀 راه‌اندازی اولیه
         // ============================================
         async function initApp() {
-            // 1. اول از همه تقویم را می‌سازیم
+            // مقداردهی اولیه تقویم و UI
             populateDateSelects();
             updateAuthUI();
             renderList();
 
-            // 2. بررسی اتصال Supabase
-            if (!dbClient) {
-                console.warn('⚠️ برنامه بدون اتصال به Supabase اجرا شد.');
-                return;
-            }
-
-            // 3. بررسی وضعیت کاربر
-            currentUser = await getCurrentUser();
-            updateAuthUI();
-
-            // 4. گوش دادن به تغییرات احراز هویت
-            dbClient.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_IN' && session) {
-                    currentUser = session.user;
-                    updateAuthUI();
-                    loadBirthdays();
-                } else if (event === 'SIGNED_OUT') {
-                    currentUser = null;
-                    updateAuthUI();
-                    birthdays = [];
-                    renderList();
-                }
-            });
-
-            // 5. بارگذاری اطلاعات اگر کاربر لاگین کرده باشد
-            if (currentUser) {
+            // بارگذاری اطلاعات از دیتابیس
+            if (dbClient) {
                 await loadBirthdays();
             }
         }
