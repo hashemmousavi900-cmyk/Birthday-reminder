@@ -252,16 +252,12 @@
         .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
         .loading { opacity: 0.6; pointer-events: none; }
 
-        /* SVG Icon Styles */
         .icon { width: 20px; height: 20px; display: inline-block; vertical-align: middle; fill: currentColor; stroke: none; flex-shrink: 0; }
         .icon-sm { width: 14px; height: 14px; }
         .icon-lg { width: 24px; height: 24px; }
         .icon-white { color: #fff; }
-        .icon-accent { color: var(--accent-1); }
 
-        /* ======================================== */
-        /* 🎨 استایل پاپ‌آپ (Popover) */
-        /* ======================================== */
+        /* Popover */
         .popover {
             display: none;
             position: fixed;
@@ -285,6 +281,12 @@
             display: block;
             opacity: 1;
             transform: scale(1) translateY(0);
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.7) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
         
         .popover::before {
@@ -308,7 +310,6 @@
             background-color: #e2e8f0;
             border: 3px solid var(--accent-1);
             box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25);
-            transition: transform 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -357,7 +358,6 @@
             padding: 6px 10px;
             min-width: 50px;
             border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
         }
         
         .popover .countdown-item .countdown-number {
@@ -408,19 +408,7 @@
             color: var(--danger);
         }
 
-        /* افکت ورود پاپ‌آپ */
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.7) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        
-        .popover.active {
-            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-
-        /* ======================================== */
-        /* 🎨 استایل مودال رمز */
-        /* ======================================== */
+        /* Password Modal */
         .password-overlay {
             display: none;
             position: fixed;
@@ -553,6 +541,31 @@
             display: block;
         }
 
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1e293b;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            z-index: 9999999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            direction: rtl;
+            font-family: 'Vazirmatn', sans-serif;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
         @media (max-width: 768px) {
             .portal-container { padding: 24px 18px; border-radius: 24px; }
             .form-grid { grid-template-columns: 60px 1fr 1fr; }
@@ -592,9 +605,7 @@
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- 🎯 مودال رمز -->
-    <!-- ========================================== -->
+    <!-- Password Modal -->
     <div class="password-overlay" id="passwordOverlay">
         <div class="password-modal">
             <div class="modal-icon">🔐</div>
@@ -609,16 +620,14 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 🎯 Popover (پاپ‌آپ) -->
-    <!-- ========================================== -->
+    <!-- Popover -->
     <div class="popover" id="popover">
         <button class="popover-close" id="popoverClose">✕</button>
         <div class="popover-avatar" id="popoverAvatar">👤</div>
         <div class="popover-name" id="popoverName">نام</div>
         <div class="popover-birthday" id="popoverBirthday">تاریخ تولد</div>
         <div class="popover-divider"></div>
-        <div class="countdown-container" id="countdownContainer">
+        <div class="countdown-container">
             <div class="countdown-item highlight">
                 <div class="countdown-number" id="cdDays">--</div>
                 <div class="countdown-label">روز</div>
@@ -638,9 +647,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 🎯 محتوای اصلی -->
-    <!-- ========================================== -->
+    <!-- Main Content -->
     <div class="particles">
         <div class="particle" style="left: 10%; width: 4px; height: 4px; animation-duration: 20s;"></div>
         <div class="particle" style="left: 30%; width: 6px; height: 6px; animation-duration: 25s; animation-delay: 3s; background: rgba(236, 72, 153, 0.2);"></div>
@@ -756,9 +763,7 @@
     (function() {
         "use strict";
 
-        // ============================================
-        // 🎯 DOM Elements
-        // ============================================
+        // ============ DOM Elements ============
         const nameInput = document.getElementById('nameInput');
         const daySelect = document.getElementById('daySelect');
         const monthSelect = document.getElementById('monthSelect');
@@ -772,7 +777,7 @@
         const todayDate = document.getElementById('todayDate');
         const btnText = document.getElementById('btnText');
 
-        // Password Modal Elements
+        // Password Modal
         const passwordOverlay = document.getElementById('passwordOverlay');
         const passwordInput = document.getElementById('passwordInput');
         const modalConfirm = document.getElementById('modalConfirm');
@@ -780,7 +785,7 @@
         const modalError = document.getElementById('modalError');
         const modalDesc = document.getElementById('modalDesc');
 
-        // Popover Elements
+        // Popover
         const popover = document.getElementById('popover');
         const popoverAvatar = document.getElementById('popoverAvatar');
         const popoverName = document.getElementById('popoverName');
@@ -791,9 +796,7 @@
         const cdMinutes = document.getElementById('cdMinutes');
         const cdSeconds = document.getElementById('cdSeconds');
 
-        // ============================================
-        // 🔑 Supabase Config
-        // ============================================
+        // ============ Supabase Config ============
         const SUPABASE_URL = 'https://buowqguzsrychwoxyqby.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc';
 
@@ -801,24 +804,6 @@
         let adminPassword = '20252026';
         let pendingAction = null;
         let pendingData = null;
-
-        try {
-            if (window.supabase) {
-                dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                    db: {
-                        schema: 'app_birthdayreminder'
-                    }
-                });
-                console.log('✅ Supabase client initialized');
-            }
-        } catch (error) {
-            console.error('❌ خطا در راه‌اندازی Supabase:', error.message);
-        }
-
-        // ============================================
-        // 📦 Variables
-        // ============================================
-        const persianMonths = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
         let birthdays = [];
         let editingId = null;
         let currentImage = null;
@@ -826,101 +811,20 @@
         let currentPopoverItem = null;
         let popoverTimeout = null;
 
-        // ============================================
-        // 🔐 Password Functions
-        // ============================================
-        async function loadAdminPassword() {
-            if (!dbClient) {
-                console.warn('⚠️ Cannot load password: Supabase not initialized');
-                return;
+        try {
+            if (window.supabase) {
+                dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    db: { schema: 'app_birthdayreminder' }
+                });
+                console.log('✅ Supabase client initialized');
             }
-
-            try {
-                const { data, error } = await dbClient
-                    .from('settings')
-                    .select('value')
-                    .eq('key', 'admin_password')
-                    .maybeSingle();
-
-                if (error) {
-                    console.warn('⚠️ Could not load password from DB, using default:', error.message);
-                    return;
-                }
-
-                if (data && data.value) {
-                    adminPassword = data.value;
-                    console.log('✅ Admin password loaded from database');
-                }
-            } catch (error) {
-                console.warn('⚠️ Error loading password, using default:', error.message);
-            }
+        } catch (error) {
+            console.error('❌ خطا در راه‌اندازی Supabase:', error.message);
         }
 
-        function showPasswordModal(action, data, description) {
-            pendingAction = action;
-            pendingData = data;
-            passwordInput.value = '';
-            passwordInput.className = 'modal-input';
-            modalError.className = 'modal-error';
-            if (description) {
-                modalDesc.textContent = description;
-            } else {
-                modalDesc.textContent = 'برای ادامه، رمز را وارد کنید';
-            }
-            passwordOverlay.classList.add('active');
-            setTimeout(() => passwordInput.focus(), 100);
-        }
+        const persianMonths = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
 
-        function hidePasswordModal() {
-            passwordOverlay.classList.remove('active');
-            passwordInput.value = '';
-            passwordInput.className = 'modal-input';
-            modalError.className = 'modal-error';
-        }
-
-        function verifyPassword(input) {
-            return input === adminPassword;
-        }
-
-        function handlePasswordConfirm() {
-            const input = passwordInput.value.trim();
-            if (!input) {
-                passwordInput.className = 'modal-input error';
-                modalError.className = 'modal-error show';
-                modalError.textContent = 'لطفاً رمز را وارد کنید!';
-                return;
-            }
-
-            if (verifyPassword(input)) {
-                const action = pendingAction;
-                const data = pendingData;
-                
-                pendingAction = null;
-                pendingData = null;
-                
-                hidePasswordModal();
-                
-                setTimeout(() => {
-                    if (action === 'add' || action === 'edit') {
-                        doSaveBirthday(data);
-                    } else if (action === 'delete') {
-                        doDeleteBirthday(data);
-                    } else {
-                        console.warn('⚠️ Unknown action:', action);
-                    }
-                }, 100);
-            } else {
-                passwordInput.className = 'modal-input error';
-                modalError.className = 'modal-error show';
-                modalError.textContent = 'رمز وارد شده اشتباه است!';
-                passwordInput.value = '';
-                setTimeout(() => passwordInput.focus(), 300);
-            }
-        }
-
-        // ============================================
-        // 📅 Jalali Calendar Functions
-        // ============================================
+        // ============ Jalali Functions ============
         function toFa(num) {
             if (num === null || num === undefined) return '';
             const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
@@ -961,18 +865,80 @@
             return { gy, gm, gd };
         }
 
-        // ============================================
-        // 📅 Initialize Today Date
-        // ============================================
         const todayGreg = new Date();
         const todayJalali = gregorianToJalali(todayGreg.getFullYear(), todayGreg.getMonth() + 1, todayGreg.getDate());
         if (todayDate) {
             todayDate.innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
         }
 
-        // ============================================
-        // 💾 CRUD Operations
-        // ============================================
+        // ============ Password Functions ============
+        async function loadAdminPassword() {
+            if (!dbClient) return;
+            try {
+                const { data, error } = await dbClient
+                    .from('settings')
+                    .select('value')
+                    .eq('key', 'admin_password')
+                    .maybeSingle();
+                if (!error && data && data.value) {
+                    adminPassword = data.value;
+                    console.log('✅ Admin password loaded');
+                }
+            } catch (error) {
+                console.warn('⚠️ Using default password');
+            }
+        }
+
+        function showPasswordModal(action, data, description) {
+            pendingAction = action;
+            pendingData = data;
+            passwordInput.value = '';
+            passwordInput.className = 'modal-input';
+            modalError.className = 'modal-error';
+            modalDesc.textContent = description || 'برای ادامه، رمز را وارد کنید';
+            passwordOverlay.classList.add('active');
+            setTimeout(() => passwordInput.focus(), 100);
+        }
+
+        function hidePasswordModal() {
+            passwordOverlay.classList.remove('active');
+            passwordInput.value = '';
+            passwordInput.className = 'modal-input';
+            modalError.className = 'modal-error';
+        }
+
+        function handlePasswordConfirm() {
+            const input = passwordInput.value.trim();
+            if (!input) {
+                passwordInput.className = 'modal-input error';
+                modalError.className = 'modal-error show';
+                modalError.textContent = 'لطفاً رمز را وارد کنید!';
+                return;
+            }
+
+            if (input === adminPassword) {
+                const action = pendingAction;
+                const data = pendingData;
+                pendingAction = null;
+                pendingData = null;
+                hidePasswordModal();
+                setTimeout(() => {
+                    if (action === 'add' || action === 'edit') {
+                        doSaveBirthday(data);
+                    } else if (action === 'delete') {
+                        doDeleteBirthday(data);
+                    }
+                }, 100);
+            } else {
+                passwordInput.className = 'modal-input error';
+                modalError.className = 'modal-error show';
+                modalError.textContent = 'رمز وارد شده اشتباه است!';
+                passwordInput.value = '';
+                setTimeout(() => passwordInput.focus(), 300);
+            }
+        }
+
+        // ============ CRUD Operations ============
         async function loadBirthdays() {
             if (!dbClient) {
                 console.warn('⚠️ Supabase not initialized');
@@ -986,11 +952,7 @@
                     .select('*')
                     .order('created_at', { ascending: false });
 
-                if (error) {
-                    console.error('❌ Supabase error:', error);
-                    throw error;
-                }
-                
+                if (error) throw error;
                 birthdays = data || [];
                 renderList();
             } catch (error) {
@@ -1007,32 +969,13 @@
 
             try {
                 addBtn.classList.add('loading');
-                addBtn.innerHTML = `
-                    <svg class="icon" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;">
-                        <path d="M12 4V8L16 4L12 0V4Z"/>
-                        <path d="M12 20V16L8 20L12 24V20Z" opacity="0.5"/>
-                        <path d="M4 12H8L4 8L0 12H4Z" opacity="0.3"/>
-                        <path d="M20 12H16L20 16L24 12H20Z" opacity="0.7"/>
-                    </svg>
-                    در حال ذخیره...
-                `;
-                if (!document.getElementById('spinStyle')) {
-                    const style = document.createElement('style');
-                    style.id = 'spinStyle';
-                    style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
-                    document.head.appendChild(style);
-                }
+                addBtn.innerHTML = '<span style="display:flex;align-items:center;gap:8px;"><span class="icon" style="animation:spin 1s linear infinite;">⏳</span> در حال ذخیره...</span>';
 
                 let result;
                 if (editingId) {
-                    result = await dbClient
-                        .from('birthdays')
-                        .update(data)
-                        .eq('id', editingId);
+                    result = await dbClient.from('birthdays').update(data).eq('id', editingId);
                 } else {
-                    result = await dbClient
-                        .from('birthdays')
-                        .insert([data]);
+                    result = await dbClient.from('birthdays').insert([data]);
                 }
 
                 if (result.error) throw result.error;
@@ -1040,10 +983,7 @@
                 resetForm();
                 hidePopover();
                 await loadBirthdays();
-                
-                const msg = editingId ? '✅ تولد با موفقیت ویرایش شد!' : '✅ تولد با موفقیت اضافه شد!';
-                showToast(msg);
-                
+                showToast(editingId ? '✅ تولد با موفقیت ویرایش شد!' : '✅ تولد با موفقیت اضافه شد!');
             } catch (error) {
                 console.error('❌ Save error:', error);
                 alert('خطا در ذخیره‌سازی: ' + error.message);
@@ -1056,9 +996,7 @@
                     <span id="btnText">افزودن</span>
                 `;
                 const newBtnText = document.getElementById('btnText');
-                if (newBtnText) {
-                    newBtnText.textContent = 'افزودن';
-                }
+                if (newBtnText) newBtnText.textContent = 'افزودن';
             }
         }
 
@@ -1067,10 +1005,7 @@
             if (!name) {
                 nameInput.style.borderColor = 'var(--danger)';
                 nameInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
-                setTimeout(() => { 
-                    nameInput.style.borderColor = ''; 
-                    nameInput.style.boxShadow = ''; 
-                }, 1500);
+                setTimeout(() => { nameInput.style.borderColor = ''; nameInput.style.boxShadow = ''; }, 1500);
                 return;
             }
 
@@ -1089,7 +1024,6 @@
 
             const action = editingId ? 'edit' : 'add';
             const desc = editingId ? '🔐 برای ویرایش این تولد، رمز را وارد کنید' : '🔐 برای افزودن تولد جدید، رمز را وارد کنید';
-            
             showPasswordModal(action, payload, desc);
         }
 
@@ -1097,11 +1031,7 @@
             if (!dbClient) return;
 
             try {
-                const { error } = await dbClient
-                    .from('birthdays')
-                    .delete()
-                    .eq('id', id);
-
+                const { error } = await dbClient.from('birthdays').delete().eq('id', id);
                 if (error) throw error;
 
                 if (editingId === id) resetForm();
@@ -1115,8 +1045,7 @@
         }
 
         function deleteBirthdayWithPassword(id) {
-            const desc = '🔐 برای حذف این تولد، رمز را وارد کنید';
-            showPasswordModal('delete', id, desc);
+            showPasswordModal('delete', id, '🔐 برای حذف این تولد، رمز را وارد کنید');
         }
 
         function editPerson(id) {
@@ -1141,57 +1070,10 @@
             if (btnText) btnText.textContent = 'به‌روزرسانی';
             cancelBtn.style.display = 'flex';
             hidePopover();
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ============================================
-        // 🎨 Toast Notification
-        // ============================================
-        function showToast(message) {
-            const oldToast = document.querySelector('.toast-notification');
-            if (oldToast) oldToast.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification';
-            toast.textContent = message;
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 30px;
-                left: 50%;
-                transform: translateX(-50%) translateY(100px);
-                background: #1e293b;
-                color: #fff;
-                padding: 14px 28px;
-                border-radius: 14px;
-                font-size: 0.95rem;
-                font-weight: 600;
-                z-index: 9999999;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-                opacity: 0;
-                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-                direction: rtl;
-                font-family: 'Vazirmatn', sans-serif;
-                max-width: 90%;
-                text-align: center;
-            `;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateX(-50%) translateY(0)';
-            }, 10);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(-50%) translateY(100px)';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
-        }
-
-        // ============================================
-        // 🎨 UI Functions
-        // ============================================
+        // ============ UI Functions ============
         function resetForm() {
             editingId = null;
             nameInput.value = '';
@@ -1228,7 +1110,6 @@
             });
             
             updateDays();
-            
             yearSelect.value = todayJalali.jy;
             monthSelect.value = todayJalali.jm;
             updateDays();
@@ -1283,9 +1164,23 @@
             return { daysLeft, upcomingAge, nextBday: nextBdayGreg };
         }
 
-        // ============================================
-        // 🎯 Popover Functions
-        // ============================================
+        function showToast(message) {
+            const oldToast = document.querySelector('.toast-notification');
+            if (oldToast) oldToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // ============ Popover Functions ============
         function showPopover(event, item) {
             if (popoverTimeout) {
                 clearTimeout(popoverTimeout);
@@ -1311,7 +1206,6 @@
             }
             
             popoverName.textContent = item.name;
-            
             const dateText = `${toFa(item.day)} ${persianMonths[item.month-1]} ${item.year ? toFa(item.year) : ''}`;
             popoverBirthday.textContent = `🎂 ${dateText}`;
             
@@ -1359,9 +1253,7 @@
                 clearTimeout(popoverTimeout);
                 popoverTimeout = null;
             }
-            popoverTimeout = setTimeout(() => {
-                hidePopover();
-            }, delay || 200);
+            popoverTimeout = setTimeout(() => hidePopover(), delay || 200);
         }
         
         function startCountdown(item) {
@@ -1422,33 +1314,22 @@
             cdSeconds.textContent = String(seconds).padStart(2, '0');
         }
 
-        // ============================================
-        // 🎨 Render List
-        // ============================================
+        // ============ Render List ============
         function renderList() {
             birthdayList.innerHTML = '';
             
             if (!dbClient) {
-                birthdayList.innerHTML = `
-                    <li class="empty-state">
-                        <svg class="icon icon-lg" viewBox="0 0 24 24">
-                            <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/>
-                        </svg>
-                        <p>اتصال به سرور برقرار نشد.</p>
-                    </li>`;
+                birthdayList.innerHTML = `<li class="empty-state">
+                    <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/></svg>
+                    <p>اتصال به سرور برقرار نشد.</p></li>`;
                 counterBadge.textContent = '۰ نفر';
                 return;
             }
 
             if (birthdays.length === 0) {
-                birthdayList.innerHTML = `
-                    <li class="empty-state">
-                        <svg class="icon icon-lg" viewBox="0 0 24 24">
-                            <path d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V5C21 3.9 20.1 3 19 3ZM19 21H5V9H19V21Z"/>
-                            <path d="M7 11H9V13H7V11Z M11 11H13V13H11V11Z M15 11H17V13H15V11Z M7 15H9V17H7V15Z M11 15H13V17H11V15Z M15 15H17V17H15V15Z"/>
-                        </svg>
-                        <p>هنوز هیچ تولدی ثبت نشده است!</p>
-                    </li>`;
+                birthdayList.innerHTML = `<li class="empty-state">
+                    <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V5C21 3.9 20.1 3 19 3ZM19 21H5V9H19V21Z"/><path d="M7 11H9V13H7V11Z M11 11H13V13H11V11Z M15 11H17V13H15V11Z M7 15H9V17H7V15Z M11 15H13V17H11V15Z M15 15H17V17H15V15Z"/></svg>
+                    <p>هنوز هیچ تولدی ثبت نشده است!</p></li>`;
                 counterBadge.textContent = '۰ نفر';
                 return;
             }
@@ -1478,37 +1359,14 @@
                 
                 if(item.daysLeft === 0) {
                     badgeClass += ' today';
-                    badgeContent = `
-                        <svg class="icon icon-sm" viewBox="0 0 24 24">
-                            <path d="M20 6H16.5C17.8 5.1 18.5 3.6 17.8 2.2C17.1 0.8 15.4 0.2 14 0.9C12.7 1.5 12 2.9 12 4.2C12 2.9 11.3 1.5 10 0.9C8.6 0.2 6.9 0.8 6.2 2.2C5.5 3.6 6.2 5.1 7.5 6H4C2.9 6 2 6.9 2 8V11C2 12.1 2.9 13 4 13H20C21.1 13 22 12.1 22 11V8C22 6.9 21.1 6 20 6Z"/>
-                            <path d="M4 15V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V15H4Z"/>
-                            <path d="M11 13H13V21H11V13Z"/>
-                        </svg>
-                        امروز! 🎉
-                    `;
+                    badgeContent = `🎉 امروز!`;
                 } else if(item.daysLeft !== null && item.daysLeft <= 7) {
                     badgeClass += ' soon';
-                    badgeContent = `
-                        <svg class="icon icon-sm" viewBox="0 0 24 24">
-                            <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/>
-                        </svg>
-                        ${toFa(item.daysLeft)} روز
-                    `;
+                    badgeContent = `⏳ ${toFa(item.daysLeft)} روز`;
                 } else if (item.daysLeft !== null) {
-                    badgeContent = `
-                        <svg class="icon icon-sm" viewBox="0 0 24 24">
-                            <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/>
-                        </svg>
-                        ${toFa(item.daysLeft)} روز
-                    `;
+                    badgeContent = `🕐 ${toFa(item.daysLeft)} روز`;
                 } else {
-                    badgeContent = `
-                        <svg class="icon icon-sm" viewBox="0 0 24 24">
-                            <path d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V5C21 3.9 20.1 3 19 3ZM19 21H5V9H19V21Z"/>
-                            <path d="M7 11H9V13H7V11Z M11 11H13V13H11V11Z M15 11H17V13H15V11Z"/>
-                        </svg>
-                        ناقص
-                    `;
+                    badgeContent = `📅 ناقص`;
                 }
 
                 const dateText = `${toFa(item.day)} ${persianMonths[item.month-1]} ${item.year ? toFa(item.year) : ''}`;
@@ -1520,12 +1378,7 @@
                         <div class="item-info">
                             <div class="item-name">${item.name}</div>
                             <div class="item-meta">
-                                <span>
-                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
-                                        <path d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V5C21 3.9 20.1 3 19 3ZM19 21H5V9H19V21Z"/>
-                                    </svg>
-                                    ${dateText}
-                                </span>
+                                <span>📅 ${dateText}</span>
                             </div>
                         </div>
                     </div>
@@ -1535,16 +1388,10 @@
                             ${tooltipText ? `<span class="tooltip">🎂 ${tooltipText}</span>` : ''}
                         </div>
                         <button class="btn-icon btn-edit" data-id="${item.id}" title="ویرایش">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24">
-                                <path d="M3 17.3V21H6.7L17.8 9.9L14.1 6.2L3 17.3Z"/>
-                                <path d="M20.7 7.1L16.9 3.3L15.2 5L19 8.8L20.7 7.1Z"/>
-                            </svg>
+                            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 17.3V21H6.7L17.8 9.9L14.1 6.2L3 17.3Z"/><path d="M20.7 7.1L16.9 3.3L15.2 5L19 8.8L20.7 7.1Z"/></svg>
                         </button>
                         <button class="btn-icon btn-delete" data-id="${item.id}" title="حذف">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24">
-                                <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19Z"/>
-                                <path d="M19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z"/>
-                            </svg>
+                            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19Z"/><path d="M19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z"/></svg>
                         </button>
                     </div>
                 `;
@@ -1553,16 +1400,9 @@
 
             document.querySelectorAll('.birthday-item').forEach((el, index) => {
                 const item = sorted[index];
-                
-                el.addEventListener('mouseenter', function(e) {
-                    showPopover(e, item);
-                });
-                
+                el.addEventListener('mouseenter', function(e) { showPopover(e, item); });
                 el.addEventListener('mouseleave', function(e) {
-                    const relatedTarget = e.relatedTarget;
-                    if (relatedTarget && popover.contains(relatedTarget)) {
-                        return;
-                    }
+                    if (e.relatedTarget && popover.contains(e.relatedTarget)) return;
                     scheduleHidePopover(300);
                 });
             });
@@ -1570,23 +1410,19 @@
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const id = Number(this.dataset.id);
-                    deleteBirthdayWithPassword(id);
+                    deleteBirthdayWithPassword(Number(this.dataset.id));
                 });
             });
 
             document.querySelectorAll('.btn-edit').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const id = Number(this.dataset.id);
-                    editPerson(id);
+                    editPerson(Number(this.dataset.id));
                 });
             });
         }
 
-        // ============================================
-        // 🎯 Password Modal Event Listeners
-        // ============================================
+        // ============ Event Listeners ============
         modalConfirm.addEventListener('click', handlePasswordConfirm);
         modalCancel.addEventListener('click', function() {
             pendingAction = null;
@@ -1595,9 +1431,8 @@
         });
         
         passwordInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                handlePasswordConfirm();
-            } else if (e.key === 'Escape') {
+            if (e.key === 'Enter') handlePasswordConfirm();
+            else if (e.key === 'Escape') {
                 pendingAction = null;
                 pendingData = null;
                 hidePasswordModal();
@@ -1616,37 +1451,21 @@
             }
         });
 
-        // ============================================
-        // 🎯 Popover Event Listeners
-        // ============================================
         popover.addEventListener('mouseenter', function() {
-            if (popoverTimeout) {
-                clearTimeout(popoverTimeout);
-                popoverTimeout = null;
-            }
+            if (popoverTimeout) { clearTimeout(popoverTimeout); popoverTimeout = null; }
         });
         
-        popover.addEventListener('mouseleave', function() {
-            scheduleHidePopover(200);
-        });
-        
-        popoverClose.addEventListener('click', function() {
-            hidePopover();
-        });
+        popover.addEventListener('mouseleave', function() { scheduleHidePopover(200); });
+        popoverClose.addEventListener('click', hidePopover);
         
         document.addEventListener('click', function(e) {
             if (popover.classList.contains('active')) {
                 const isItem = e.target.closest('.birthday-item');
                 const isPopover = e.target.closest('.popover');
-                if (!isItem && !isPopover) {
-                    hidePopover();
-                }
+                if (!isItem && !isPopover) hidePopover();
             }
         });
 
-        // ============================================
-        // 🎯 Event Listeners
-        // ============================================
         if (avatarUploadBtn && avatarInput) {
             avatarUploadBtn.addEventListener('click', () => avatarInput.click());
             avatarInput.addEventListener('change', (e) => {
@@ -1663,30 +1482,18 @@
             });
         }
 
-        if (monthSelect) monthSelect.addEventListener('change', updateDays);
-        if (yearSelect) yearSelect.addEventListener('change', updateDays);
-        if (cancelBtn) cancelBtn.addEventListener('click', resetForm);
-        
-        if (addBtn) {
-            addBtn.addEventListener('click', saveBirthdayWithPassword);
-        }
-        
-        if (nameInput) {
-            nameInput.addEventListener('keypress', (e) => { 
-                if(e.key === 'Enter') saveBirthdayWithPassword(); 
-            });
-        }
+        monthSelect.addEventListener('change', updateDays);
+        yearSelect.addEventListener('change', updateDays);
+        cancelBtn.addEventListener('click', resetForm);
+        addBtn.addEventListener('click', saveBirthdayWithPassword);
+        nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') saveBirthdayWithPassword(); });
 
-        // ============================================
-        // 🚀 Initialize App
-        // ============================================
+        // ============ Initialize ============
         async function initApp() {
             await loadAdminPassword();
             populateDateSelects();
             renderList();
-            if (dbClient) {
-                await loadBirthdays();
-            }
+            if (dbClient) await loadBirthdays();
         }
 
         if (document.readyState === 'loading') {
