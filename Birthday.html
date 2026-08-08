@@ -10,7 +10,7 @@
     <!-- آیکون‌ها -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- کتابخانه Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
     <style>
         :root {
@@ -29,26 +29,15 @@
             --form-border: #34d399;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Vazirmatn', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
 
         body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background: var(--bg-main);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            padding: 20px; background: var(--bg-main);
             background-image: 
                 radial-gradient(ellipse at 10% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
                 radial-gradient(ellipse at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
-            position: relative;
-            overflow-x: hidden;
-            color: var(--text-main);
+            position: relative; overflow-x: hidden; color: var(--text-main);
         }
 
         .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
@@ -60,25 +49,15 @@
         }
 
         .portal-container {
-            width: 100%;
-            max-width: 900px;
-            position: relative;
-            z-index: 1;
-            background: var(--bg-card);
-            border-radius: 32px;
-            padding: 40px 36px;
-            border: 1px solid var(--border-light);
-            box-shadow: 0 20px 50px -20px rgba(16, 185, 129, 0.25);
+            width: 100%; max-width: 900px; position: relative; z-index: 1;
+            background: var(--bg-card); border-radius: 32px; padding: 40px 36px;
+            border: 1px solid var(--border-light); box-shadow: 0 20px 50px -20px rgba(16, 185, 129, 0.25);
         }
 
-        .header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
-        }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
         .header-left { display: flex; align-items: center; gap: 16px; }
         .header-icon {
-            width: 52px; height: 52px;
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            width: 52px; height: 52px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
             border-radius: 14px; display: flex; align-items: center; justify-content: center;
             font-size: 24px; color: #fff; box-shadow: 0 8px 20px -6px rgba(139, 92, 246, 0.4);
         }
@@ -94,13 +73,10 @@
         .header-sub i { color: var(--accent-1); }
 
         .form-card {
-            background: var(--form-bg); border-radius: 24px; padding: 24px 20px;
-            margin-bottom: 32px; border: 1px solid var(--form-border);
-            box-shadow: 0 4px 15px -5px rgba(16, 185, 129, 0.2);
+            background: var(--form-bg); border-radius: 24px; padding: 24px 20px; margin-bottom: 32px;
+            border: 1px solid var(--form-border); box-shadow: 0 4px 15px -5px rgba(16, 185, 129, 0.2);
         }
-        .form-grid {
-            display: grid; grid-template-columns: 60px 1.5fr 1fr 1fr 1fr auto; gap: 12px; align-items: flex-end;
-        }
+        .form-grid { display: grid; grid-template-columns: 60px 1.5fr 1fr 1fr 1fr auto; gap: 12px; align-items: flex-end; }
         .field-group { display: flex; flex-direction: column; gap: 6px; }
         .field-group label { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-weight: 600; }
         .field-group label i { color: var(--accent-1); font-size: 0.7rem; }
@@ -111,9 +87,7 @@
             transition: all 0.3s ease; width: 100%; font-family: 'Vazirmatn', sans-serif !important;
             appearance: none; -webkit-appearance: none; cursor: pointer;
         }
-        input:focus, select:focus {
-            border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-        }
+        input:focus, select:focus { border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
         input::placeholder { color: #94a3b8; }
         select {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
@@ -121,8 +95,7 @@
         }
         select option { 
             background: #ffffff !important; color: var(--text-main) !important; padding: 10px !important; 
-            font-family: 'Vazirmatn', sans-serif !important; font-size: 0.95rem !important;
-            border-radius: 8px;
+            font-family: 'Vazirmatn', sans-serif !important; font-size: 0.95rem !important; border-radius: 8px;
         }
 
         .avatar-upload-group { align-items: center; }
@@ -140,15 +113,11 @@
 
         .action-buttons { display: flex; gap: 8px; }
         .btn-add, .btn-cancel {
-            border: none; padding: 13px 20px; border-radius: 12px;
-            font-weight: 600; font-size: 0.95rem; display: flex; align-items: center;
-            gap: 8px; cursor: pointer; transition: all 0.3s ease; white-space: nowrap;
-            height: 46px; justify-content: center;
+            border: none; padding: 13px 20px; border-radius: 12px; font-weight: 600; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s ease;
+            white-space: nowrap; height: 46px; justify-content: center;
         }
-        .btn-add {
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            color: white; box-shadow: 0 8px 20px -8px rgba(139, 92, 246, 0.4);
-        }
+        .btn-add { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; box-shadow: 0 8px 20px -8px rgba(139, 92, 246, 0.4); }
         .btn-add:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -8px rgba(139, 92, 246, 0.5); }
         .btn-cancel { background: #f1f5f9; color: var(--text-muted); display: none; }
         .btn-cancel:hover { background: #e2e8f0; }
@@ -158,43 +127,26 @@
         .list-header h2 i { color: var(--accent-2); }
         .badge-count { background: var(--accent-light); color: var(--accent-1); padding: 4px 14px; border-radius: 40px; font-size: 0.85rem; font-weight: 700; }
 
-        .birthday-list { 
-            list-style: none; display: flex; flex-direction: column; gap: 12px; 
-            max-height: 500px; overflow-y: auto; 
-            padding: 10px 6px;
-        }
+        .birthday-list { list-style: none; display: flex; flex-direction: column; gap: 12px; max-height: 500px; overflow-y: auto; padding: 10px 6px; }
         .birthday-list::-webkit-scrollbar { width: 6px; }
         .birthday-list::-webkit-scrollbar-track { background: var(--bg-input); border-radius: 10px; }
         .birthday-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .birthday-list::-webkit-scrollbar-thumb:hover { background: var(--accent-1); }
 
         .birthday-item {
-            background: #fff; border-radius: 16px; padding: 16px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid var(--border-light); 
-            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-            animation: slideIn 0.4s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            position: relative; 
-            z-index: 1; 
+            background: #fff; border-radius: 16px; padding: 16px 20px; display: flex; justify-content: space-between;
+            align-items: center; border: 1px solid var(--border-light); transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            animation: slideIn 0.4s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02); position: relative; z-index: 1; 
         }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .birthday-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-1); 
-            box-shadow: 0 8px 20px -10px rgba(139, 92, 246, 0.2); 
-            z-index: 10; 
-        }
+        .birthday-item:hover { transform: translateY(-2px); border-color: var(--accent-1); box-shadow: 0 8px 20px -10px rgba(139, 92, 246, 0.2); z-index: 10; }
 
         .item-left { display: flex; align-items: center; gap: 16px; }
         .avatar {
             width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 1.2rem; color: #fff; 
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            box-shadow: 0 4px 10px -4px rgba(139, 92, 246, 0.4);
-            background-size: cover; background-position: center;
-            flex-shrink: 0;
+            font-weight: 700; font-size: 1.2rem; color: #fff; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            box-shadow: 0 4px 10px -4px rgba(139, 92, 246, 0.4); background-size: cover; background-position: center; flex-shrink: 0;
         }
         .item-info { display: flex; flex-direction: column; gap: 4px; }
         .item-name { font-weight: 700; font-size: 1.05rem; color: var(--text-main); }
@@ -202,23 +154,12 @@
         .item-meta i { font-size: 0.75rem; margin-left: 4px; color: var(--accent-1); }
 
         .item-right { display: flex; align-items: center; gap: 8px; }
-        
-        .countdown-badge {
-            padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 700;
-            display: flex; align-items: center; gap: 8px; background: #f1f5f9; color: var(--text-main);
-        }
-        .countdown-badge.soon { 
-            background: #fffbeb; color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); 
-        }
+        .countdown-badge { padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px; background: #f1f5f9; color: var(--text-main); }
+        .countdown-badge.soon { background: #fffbeb; color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); }
         .countdown-badge.today {
-            background: linear-gradient(135deg, #ec4899, #be185d);
-            color: #fff; border: none;
-            font-weight: 800; font-size: 0.95rem;
-            padding: 10px 20px;
-            border-radius: 15px 5px 15px 5px; 
-            box-shadow: 0 6px 18px -4px rgba(236, 72, 153, 0.5);
-            animation: pulseBold 1.8s infinite;
-            transform: rotate(-3deg); 
+            background: linear-gradient(135deg, #ec4899, #be185d); color: #fff; border: none;
+            font-weight: 800; font-size: 0.95rem; padding: 10px 20px; border-radius: 15px 5px 15px 5px; 
+            box-shadow: 0 6px 18px -4px rgba(236, 72, 153, 0.5); animation: pulseBold 1.8s infinite; transform: rotate(-3deg); 
         }
         @keyframes pulseBold {
             0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.5); transform: rotate(-3deg) scale(1); }
@@ -226,29 +167,17 @@
             100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); transform: rotate(-3deg) scale(1); }
         }
 
-        .btn-icon {
-            width: 36px; height: 36px; border-radius: 10px; cursor: pointer; transition: all 0.3s;
-            display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-light);
-            background: #f8fafc;
-        }
+        .btn-icon { width: 36px; height: 36px; border-radius: 10px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-light); background: #f8fafc; }
         .btn-edit { color: var(--accent-1); }
         .btn-edit:hover { background: var(--accent-light); border-color: var(--accent-1); }
         .btn-delete { color: #94a3b8; }
         .btn-delete:hover { background: #fef2f2; color: var(--danger); border-color: #fecaca; }
 
-        .empty-state {
-            text-align: center; padding: 50px 20px; background: var(--bg-input);
-            border-radius: 20px; border: 1px dashed var(--border-light);
-        }
+        .empty-state { text-align: center; padding: 50px 20px; background: var(--bg-input); border-radius: 20px; border: 1px dashed var(--border-light); }
         .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 12px; }
         .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
+        .loading { opacity: 0.6; pointer-events: none; }
 
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        /* responsive */
         @media (max-width: 768px) {
             .portal-container { padding: 24px 18px; border-radius: 24px; }
             .form-grid { grid-template-columns: 60px 1fr 1fr; }
@@ -328,12 +257,9 @@
     </div>
 
     <script>
-    (function() {
+    window.addEventListener('DOMContentLoaded', function() {
         "use strict";
 
-        // ============================================
-        // 🎯 DOM Elements
-        // ============================================
         const nameInput = document.getElementById('nameInput');
         const daySelect = document.getElementById('daySelect');
         const monthSelect = document.getElementById('monthSelect');
@@ -344,44 +270,38 @@
         const counterBadge = document.getElementById('counterBadge');
         const avatarUploadBtn = document.getElementById('avatarUploadBtn');
         const avatarInput = document.getElementById('avatarInput');
-        const todayDate = document.getElementById('todayDate');
 
-        // ============================================
-        // 🔑 Supabase Config
-        // ============================================
-        const SUPABASE_URL = 'https://buowqguzsrychwoxyqby.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc';
-        const TABLE_NAME = 'birthdays'; // ← نام جدول درست
+        const SUPABASE_CONFIG = {
+            url: 'https://buowqguzsrychwoxyqby.supabase.co',
+            anonKey: 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc'
+        };
 
-        let supabase = null;
-        if (typeof window.supabase !== 'undefined') {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('✅ Supabase client initialized');
-        } else {
-            console.error('❌ Supabase library not loaded');
+        let dbClient = null;
+        try {
+            if (window.supabase) {
+                // 🔑 معرفی اسکمای سفارشی به کلاینت سوپابیس
+                dbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
+                    db: {
+                        schema: 'app_birthdayreminder'
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('❌ خطا در راه‌اندازی Supabase:', error.message);
         }
 
-        // ============================================
-        // 📦 Variables
-        // ============================================
         const persianMonths = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
         let birthdays = [];
         let editingId = null;
         let currentImage = null;
 
-        // ============================================
-        // 📅 Jalali Calendar Functions
-        // ============================================
         function toFa(num) {
             if (num === null || num === undefined) return '';
             const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
             return String(num).replace(/[0-9]/g, (d) => faDigits[d]);
         }
 
-        function isLeapJalaliYear(jy) { 
-            return ((jy % 33 + 3) % 4 === 0); 
-        }
-        
+        function isLeapJalaliYear(jy) { return ((jy % 33 + 3) % 4 === 0); }
         function getDaysInJalaliMonth(jy, jm) {
             if (jm <= 6) return 31;
             if (jm <= 11) return 30;
@@ -394,10 +314,8 @@
             gy -= (gy <= 1600) ? 621 : 1600;
             let gy2 = (gm > 2) ? (gy + 1) : gy;
             let days = (365 * gy) + (Math.floor((gy2 + 3) / 4)) - (Math.floor((gy2 + 99) / 100)) + (Math.floor((gy2 + 399) / 400)) - 80 + gd + g_d_m[gm - 1];
-            jy += 33 * Math.floor(days / 12053);
-            days %= 12053;
-            jy += 4 * Math.floor(days / 1461);
-            days %= 1461;
+            jy += 33 * Math.floor(days / 12053); days %= 12053;
+            jy += 4 * Math.floor(days / 1461); days %= 1461;
             if (days > 365) { jy += Math.floor((days - 1) / 365); days = (days - 1) % 365; }
             let jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
             let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
@@ -405,58 +323,31 @@
         }
 
         function jalaliToGregorian(jy, jm, jd) {
-            let gy = (jy <= 979) ? 621 : 1600;
-            jy -= (jy <= 979) ? 0 : 979;
+            let gy = (jy <= 979) ? 621 : 1600; jy -= (jy <= 979) ? 0 : 979;
             let days = (365 * jy) + (Math.floor(jy / 33) * 8) + (Math.floor((jy % 33 + 3) / 4)) + 78 + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
-            gy += 400 * Math.floor(days / 146097);
-            days %= 146097;
+            gy += 400 * Math.floor(days / 146097); days %= 146097;
             if (days > 36524) { gy += 100 * Math.floor(--days / 36524); days %= 36524; if (days >= 365) days++; }
-            gy += 4 * Math.floor(days / 1461);
-            days %= 1461;
+            gy += 4 * Math.floor(days / 1461); days %= 1461;
             if (days > 365) { gy += Math.floor((days - 1) / 365); days = (days - 1) % 365; }
             let gd = days + 1;
             const sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-            let gm = 0;
-            for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
+            let gm = 0; for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
             return { gy, gm, gd };
         }
 
-        // ============================================
-        // 📅 Initialize Today Date
-        // ============================================
         const todayGreg = new Date();
         const todayJalali = gregorianToJalali(todayGreg.getFullYear(), todayGreg.getMonth() + 1, todayGreg.getDate());
-        if (todayDate) {
-            todayDate.innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
-        }
+        document.getElementById('todayDate').innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
 
-        // ============================================
-        // 💾 CRUD Operations
-        // ============================================
         async function loadBirthdays() {
-            if (!supabase) {
-                console.warn('⚠️ Supabase not initialized');
-                renderList();
-                return;
-            }
-
+            if (!dbClient) return;
             try {
-                const { data, error } = await supabase
-                    .from(TABLE_NAME)
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    console.error('❌ Supabase error:', error);
-                    throw error;
-                }
-                
+                const { data, error } = await dbClient.from('birthdays').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
                 birthdays = data || [];
                 renderList();
             } catch (error) {
-                console.error('❌ Error loading birthdays:', error.message);
-                alert('خطا در بارگذاری داده‌ها: ' + error.message);
-                renderList();
+                console.error('❌ خطا در دریافت داده‌ها:', error.message);
             }
         }
 
@@ -465,54 +356,37 @@
             if (!name) {
                 nameInput.style.borderColor = 'var(--danger)';
                 nameInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
-                setTimeout(() => { 
-                    nameInput.style.borderColor = ''; 
-                    nameInput.style.boxShadow = ''; 
-                }, 1500);
+                setTimeout(() => { nameInput.style.borderColor = ''; nameInput.style.boxShadow = ''; }, 1500);
                 return;
             }
-
             if (!monthSelect.value || !daySelect.value) {
-                alert('لطفاً ماه و روز تولد را انتخاب کنید.');
-                return;
+                alert('لطفاً ماه و روز تولد را انتخاب کنید.'); return;
             }
 
-            const payload = {
+            const data = {
                 name: name,
                 year: parseInt(yearSelect.value) || null,
                 month: parseInt(monthSelect.value),
                 day: parseInt(daySelect.value),
-                image: currentImage || null
+                image: currentImage
             };
-
-            if (!supabase) {
-                alert('اتصال به سرور برقرار نیست.');
-                return;
-            }
 
             try {
                 addBtn.classList.add('loading');
                 addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
 
                 if (editingId) {
-                    const { error } = await supabase
-                        .from(TABLE_NAME)
-                        .update(payload)
-                        .eq('id', editingId);
-
+                    const { error } = await dbClient.from('birthdays').update(data).eq('id', editingId);
                     if (error) throw error;
                 } else {
-                    const { error } = await supabase
-                        .from(TABLE_NAME)
-                        .insert([payload]);
-
+                    const { error } = await dbClient.from('birthdays').insert([data]);
                     if (error) throw error;
                 }
 
                 resetForm();
                 await loadBirthdays();
             } catch (error) {
-                console.error('❌ Save error:', error);
+                console.error('❌ خطا در ذخیره‌سازی:', error.message);
                 alert('خطا در ذخیره‌سازی: ' + error.message);
             } finally {
                 addBtn.classList.remove('loading');
@@ -521,21 +395,15 @@
         }
 
         async function deleteBirthday(id) {
-            if (!supabase) return;
+            if (!dbClient) return;
             if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
-
             try {
-                const { error } = await supabase
-                    .from(TABLE_NAME)
-                    .delete()
-                    .eq('id', id);
-
+                const { error } = await dbClient.from('birthdays').delete().eq('id', id);
                 if (error) throw error;
-
                 if (editingId === id) resetForm();
                 await loadBirthdays();
             } catch (error) {
-                console.error('❌ Delete error:', error);
+                console.error('❌ خطا در حذف:', error.message);
                 alert('خطا در حذف: ' + error.message);
             }
         }
@@ -543,74 +411,54 @@
         function editPerson(id) {
             const person = birthdays.find(b => b.id === id);
             if (!person) return;
-            
             editingId = id;
             nameInput.value = person.name;
             yearSelect.value = person.year || '';
             monthSelect.value = person.month;
             updateDays();
             daySelect.value = person.day;
-            
             currentImage = person.image || null;
             if (currentImage) {
                 avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
                 avatarUploadBtn.classList.add('has-image');
-            } else {
-                resetAvatarUpload();
-            }
-            
+            } else { resetAvatarUpload(); }
             document.getElementById('btnText').textContent = 'به‌روزرسانی';
             addBtn.querySelector('i').className = 'fas fa-check-circle';
             cancelBtn.style.display = 'flex';
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ============================================
-        // 🎨 UI Functions
-        // ============================================
         function resetForm() {
-            editingId = null;
-            nameInput.value = '';
-            populateDateSelects();
-            resetAvatarUpload();
+            editingId = null; nameInput.value = '';
+            populateDateSelects(); resetAvatarUpload();
             document.getElementById('btnText').textContent = 'افزودن';
             addBtn.querySelector('i').className = 'fas fa-plus-circle';
             cancelBtn.style.display = 'none';
         }
 
         function resetAvatarUpload() {
-            currentImage = null;
-            avatarInput.value = '';
+            currentImage = null; avatarInput.value = '';
             avatarUploadBtn.style.backgroundImage = '';
             avatarUploadBtn.classList.remove('has-image');
         }
 
         function populateDateSelects() {
             const currentJalaliYear = todayJalali.jy;
-            
             yearSelect.innerHTML = '<option value="">سال</option>';
             for(let y = currentJalaliYear; y >= currentJalaliYear - 100; y--) {
                 const opt = document.createElement('option');
-                opt.value = y;
-                opt.textContent = toFa(y);
+                opt.value = y; opt.textContent = toFa(y);
                 yearSelect.appendChild(opt);
             }
-
             monthSelect.innerHTML = '';
             persianMonths.forEach((m, i) => {
                 const opt = document.createElement('option');
-                opt.value = i + 1;
-                opt.textContent = m;
+                opt.value = i + 1; opt.textContent = m;
                 monthSelect.appendChild(opt);
             });
-            
             updateDays();
-            
-            yearSelect.value = todayJalali.jy;
-            monthSelect.value = todayJalali.jm;
-            updateDays();
-            daySelect.value = todayJalali.jd;
+            yearSelect.value = todayJalali.jy; monthSelect.value = todayJalali.jm;
+            updateDays(); daySelect.value = todayJalali.jd;
         }
 
         function updateDays() {
@@ -618,25 +466,18 @@
             const y = parseInt(yearSelect.value) || todayJalali.jy;
             const daysInMonth = getDaysInJalaliMonth(y, m);
             const previousDay = daySelect.value;
-            
             daySelect.innerHTML = '<option value="">روز</option>';
             for(let d = 1; d <= daysInMonth; d++) {
                 const opt = document.createElement('option');
-                opt.value = d;
-                opt.textContent = toFa(d);
+                opt.value = d; opt.textContent = toFa(d);
                 daySelect.appendChild(opt);
             }
-            
-            if (previousDay && parseInt(previousDay) <= daysInMonth) {
-                daySelect.value = previousDay;
-            }
+            if (previousDay && parseInt(previousDay) <= daysInMonth) { daySelect.value = previousDay; }
         }
 
         function calculateBirthdayStats(b) {
             if (!b.month || !b.day) return { daysLeft: null, upcomingAge: null };
-            
-            const jMonth = b.month;
-            const jDay = b.day;
+            const jMonth = b.month; const jDay = b.day;
             let gBdayThisYear = jalaliToGregorian(todayJalali.jy, jMonth, jDay);
             let bdayDateThisYear = new Date(gBdayThisYear.gy, gBdayThisYear.gm - 1, gBdayThisYear.gd);
             bdayDateThisYear.setHours(0, 0, 0, 0);
@@ -663,57 +504,29 @@
 
         function renderList() {
             birthdayList.innerHTML = '';
-            
-            if (!supabase) {
-                birthdayList.innerHTML = `
-                    <li class="empty-state">
-                        <i class="fas fa-wifi"></i>
-                        <p>اتصال به سرور برقرار نشد.</p>
-                    </li>`;
-                counterBadge.textContent = '۰ نفر';
-                return;
+            if (!dbClient) {
+                birthdayList.innerHTML = `<li class="empty-state"><i class="fas fa-wifi"></i><p>اتصال به سرور برقرار نشد.</p></li>`;
+                counterBadge.textContent = '۰ نفر'; return;
             }
-
             if (birthdays.length === 0) {
-                birthdayList.innerHTML = `
-                    <li class="empty-state">
-                        <i class="fas fa-calendar-plus"></i>
-                        <p>هنوز هیچ تولدی ثبت نشده است!</p>
-                    </li>`;
-                counterBadge.textContent = '۰ نفر';
-                return;
+                birthdayList.innerHTML = `<li class="empty-state"><i class="fas fa-calendar-plus"></i><p>هنوز هیچ تولدی ثبت نشده است!</p></li>`;
+                counterBadge.textContent = '۰ نفر'; return;
             }
-
-            const sorted = birthdays.map((item) => {
-                const stats = calculateBirthdayStats(item);
-                return { ...item, ...stats };
-            }).sort((a, b) => (a.daysLeft || 9999) - (b.daysLeft || 9999));
-
+            const sorted = birthdays.map((item) => { const stats = calculateBirthdayStats(item); return { ...item, ...stats }; }).sort((a, b) => (a.daysLeft || 9999) - (b.daysLeft || 9999));
             counterBadge.textContent = `${toFa(birthdays.length)} نفر`;
 
             sorted.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'birthday-item';
-                
                 const avatarStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
                 const avatarContent = item.image ? '' : item.name.charAt(0);
-                
-                let badgeClass = 'countdown-badge';
-                let badgeText = '';
-                if(item.daysLeft === 0) {
-                    badgeClass += ' today';
-                    badgeText = `<i class="fas fa-gift"></i> امروز! 🎉`;
-                } else if(item.daysLeft !== null && item.daysLeft <= 7) {
-                    badgeClass += ' soon';
-                    badgeText = `<i class="fas fa-hourglass-half"></i> ${toFa(item.daysLeft)} روز`;
-                } else if (item.daysLeft !== null) {
-                    badgeText = `<i class="far fa-clock"></i> ${toFa(item.daysLeft)} روز`;
-                } else {
-                    badgeText = `<i class="fas fa-calendar-times"></i> ناقص`;
-                }
+                let badgeClass = 'countdown-badge'; let badgeText = '';
+                if(item.daysLeft === 0) { badgeClass += ' today'; badgeText = `<i class="fas fa-gift"></i> امروز! 🎉`; }
+                else if(item.daysLeft <= 7) { badgeClass += ' soon'; badgeText = `<i class="fas fa-hourglass-half"></i> ${toFa(item.daysLeft)} روز`; }
+                else if (item.daysLeft > 7) { badgeText = `<i class="far fa-clock"></i> ${toFa(item.daysLeft)} روز`; }
+                else { badgeText = `<i class="fas fa-calendar-times"></i> ناقص`; }
 
                 const dateText = `${toFa(item.day)} ${persianMonths[item.month-1]} ${item.year ? toFa(item.year) : ''}`;
-                
                 li.innerHTML = `
                     <div class="item-left">
                         <div class="avatar" ${avatarStyle}>${avatarContent}</div>
@@ -727,83 +540,42 @@
                     </div>
                     <div class="item-right">
                         <div class="${badgeClass}">${badgeText}</div>
-                        <button class="btn-icon btn-edit" data-id="${item.id}" title="ویرایش">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon btn-delete" data-id="${item.id}" title="حذف">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                `;
+                        <button class="btn-icon btn-edit" data-id="${item.id}" title="ویرایش"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon btn-delete" data-id="${item.id}" title="حذف"><i class="fas fa-trash-alt"></i></button>
+                    </div>`;
                 birthdayList.appendChild(li);
             });
 
-            // Event listeners for delete buttons
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = Number(e.currentTarget.dataset.id);
-                    deleteBirthday(id);
-                });
-            });
-
-            // Event listeners for edit buttons
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = Number(e.currentTarget.dataset.id);
-                    editPerson(id);
-                });
-            });
+            document.querySelectorAll('.btn-delete').forEach(btn => { btn.addEventListener('click', (e) => { deleteBirthday(e.currentTarget.dataset.id); }); });
+            document.querySelectorAll('.btn-edit').forEach(btn => { btn.addEventListener('click', (e) => { editPerson(e.currentTarget.dataset.id); }); });
         }
 
-        // ============================================
-        // 🎯 Event Listeners
-        // ============================================
-        if (avatarUploadBtn && avatarInput) {
-            avatarUploadBtn.addEventListener('click', () => avatarInput.click());
-            avatarInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        currentImage = event.target.result;
-                        avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
-                        avatarUploadBtn.classList.add('has-image');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
-        if (monthSelect) monthSelect.addEventListener('change', updateDays);
-        if (yearSelect) yearSelect.addEventListener('change', updateDays);
-        if (cancelBtn) cancelBtn.addEventListener('click', resetForm);
-        if (addBtn) addBtn.addEventListener('click', saveBirthday);
-        if (nameInput) {
-            nameInput.addEventListener('keypress', (e) => { 
-                if(e.key === 'Enter') saveBirthday(); 
-            });
-        }
-
-        // ============================================
-        // 🚀 Initialize App
-        // ============================================
-        async function initApp() {
-            populateDateSelects();
-            renderList();
-            
-            if (supabase) {
-                await loadBirthdays();
+        avatarUploadBtn.addEventListener('click', () => avatarInput.click());
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    currentImage = event.target.result;
+                    avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
+                    avatarUploadBtn.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
             }
-        }
+        });
 
-        // Make sure DOM is fully loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
+        monthSelect.addEventListener('change', updateDays);
+        yearSelect.addEventListener('change', updateDays);
+        cancelBtn.addEventListener('click', resetForm);
+        addBtn.addEventListener('click', saveBirthday);
+        nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') saveBirthday(); });
 
-    })();
+        async function initApp() {
+            populateDateSelects(); renderList();
+            if (dbClient) { await loadBirthdays(); }
+        }
+        initApp();
+    });
     </script>
 </body>
 </html>
