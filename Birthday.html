@@ -753,6 +753,7 @@
     </div>
 
     <script>
+       <script>
     (function() {
         "use strict";
 
@@ -840,7 +841,7 @@
                     .from('settings')
                     .select('value')
                     .eq('key', 'admin_password')
-                    .single();
+                    .maybeSingle();
 
                 if (error) {
                     console.warn('⚠️ Could not load password from DB, using default:', error.message);
@@ -876,8 +877,7 @@
             passwordInput.value = '';
             passwordInput.className = 'modal-input';
             modalError.className = 'modal-error';
-            pendingAction = null;
-            pendingData = null;
+            // توجه: pendingAction رو پاک نمیکنیم تا بعد از تایید اجرا بشه
         }
 
         function verifyPassword(input) {
@@ -894,32 +894,32 @@
             }
 
             if (verifyPassword(input)) {
-                // رمز درست است
+                // رمز درست است - بستن مودال و اجرای عملیات
+                const action = pendingAction;
+                const data = pendingData;
+                
+                // پاک کردن pending ها قبل از اجرا
+                pendingAction = null;
+                pendingData = null;
+                
                 hidePasswordModal();
-                executePendingAction();
+                
+                // اجرای عملیات با تاخیر کم برای اطمینان از بسته شدن مودال
+                setTimeout(() => {
+                    if (action === 'add' || action === 'edit') {
+                        doSaveBirthday(data);
+                    } else if (action === 'delete') {
+                        doDeleteBirthday(data);
+                    } else {
+                        console.warn('⚠️ Unknown action:', action);
+                    }
+                }, 100);
             } else {
                 passwordInput.className = 'modal-input error';
                 modalError.className = 'modal-error show';
                 modalError.textContent = 'رمز وارد شده اشتباه است!';
                 passwordInput.value = '';
                 setTimeout(() => passwordInput.focus(), 300);
-            }
-        }
-
-        function executePendingAction() {
-            if (!pendingAction) return;
-            
-            const action = pendingAction;
-            const data = pendingData;
-            pendingAction = null;
-            pendingData = null;
-
-            if (action === 'add') {
-                doSaveBirthday(data);
-            } else if (action === 'edit') {
-                doSaveBirthday(data);
-            } else if (action === 'delete') {
-                doDeleteBirthday(data);
             }
         }
 
@@ -1022,28 +1022,36 @@
                     </svg>
                     در حال ذخیره...
                 `;
-                const style = document.createElement('style');
-                style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
-                document.head.appendChild(style);
+                // اضافه کردن استایل انیمیشن اگر وجود نداشت
+                if (!document.getElementById('spinStyle')) {
+                    const style = document.createElement('style');
+                    style.id = 'spinStyle';
+                    style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
+                    document.head.appendChild(style);
+                }
 
+                let result;
                 if (editingId) {
-                    const { error } = await dbClient
+                    result = await dbClient
                         .from('birthdays')
                         .update(data)
                         .eq('id', editingId);
-
-                    if (error) throw error;
                 } else {
-                    const { error } = await dbClient
+                    result = await dbClient
                         .from('birthdays')
                         .insert([data]);
-
-                    if (error) throw error;
                 }
+
+                if (result.error) throw result.error;
 
                 resetForm();
                 hidePopover();
                 await loadBirthdays();
+                
+                // پیام موفقیت
+                const msg = editingId ? '✅ تولد با موفقیت ویرایش شد!' : '✅ تولد با موفقیت اضافه شد!';
+                showToast(msg);
+                
             } catch (error) {
                 console.error('❌ Save error:', error);
                 alert('خطا در ذخیره‌سازی: ' + error.message);
@@ -1055,6 +1063,11 @@
                     </svg>
                     <span id="btnText">افزودن</span>
                 `;
+                // آپدیت btnText
+                const newBtnText = document.getElementById('btnText');
+                if (newBtnText) {
+                    newBtnText.textContent = editingId ? 'افزودن' : 'افزودن';
+                }
             }
         }
 
@@ -1085,7 +1098,7 @@
             };
 
             const action = editingId ? 'edit' : 'add';
-            const desc = editingId ? 'برای ویرایش این تولد، رمز را وارد کنید' : 'برای افزودن تولد جدید، رمز را وارد کنید';
+            const desc = editingId ? '🔐 برای ویرایش این تولد، رمز را وارد کنید' : '🔐 برای افزودن تولد جدید، رمز را وارد کنید';
             
             showPasswordModal(action, payload, desc);
         }
@@ -1105,6 +1118,7 @@
                 if (editingId === id) resetForm();
                 hidePopover();
                 await loadBirthdays();
+                showToast('🗑️ تولد با موفقیت حذف شد!');
             } catch (error) {
                 console.error('❌ Delete error:', error);
                 alert('خطا در حذف: ' + error.message);
@@ -1113,7 +1127,7 @@
 
         // تابع حذف با بررسی رمز
         function deleteBirthdayWithPassword(id) {
-            const desc = 'برای حذف این تولد، رمز را وارد کنید';
+            const desc = '🔐 برای حذف این تولد، رمز را وارد کنید';
             showPasswordModal('delete', id, desc);
         }
 
@@ -1141,6 +1155,53 @@
             hidePopover();
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================
+        // 🎨 Toast Notification
+        // ============================================
+        function showToast(message) {
+            // حذف toast قبلی
+            const oldToast = document.querySelector('.toast-notification');
+            if (oldToast) oldToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%) translateY(100px);
+                background: #1e293b;
+                color: #fff;
+                padding: 14px 28px;
+                border-radius: 14px;
+                font-size: 0.95rem;
+                font-weight: 600;
+                z-index: 9999999;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                opacity: 0;
+                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                direction: rtl;
+                font-family: 'Vazirmatn', sans-serif;
+                max-width: 90%;
+                text-align: center;
+            `;
+            document.body.appendChild(toast);
+            
+            // نمایش با انیمیشن
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            }, 10);
+            
+            // مخفی کردن بعد از ۳ ثانیه
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(100px)';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
         }
 
         // ============================================
@@ -1545,12 +1606,18 @@
         // 🎯 Password Modal Event Listeners
         // ============================================
         modalConfirm.addEventListener('click', handlePasswordConfirm);
-        modalCancel.addEventListener('click', hidePasswordModal);
+        modalCancel.addEventListener('click', function() {
+            pendingAction = null;
+            pendingData = null;
+            hidePasswordModal();
+        });
         
         passwordInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 handlePasswordConfirm();
             } else if (e.key === 'Escape') {
+                pendingAction = null;
+                pendingData = null;
                 hidePasswordModal();
             }
             // Clear error on typing
@@ -1563,6 +1630,8 @@
         // Close modal on overlay click
         passwordOverlay.addEventListener('click', function(e) {
             if (e.target === this) {
+                pendingAction = null;
+                pendingData = null;
                 hidePasswordModal();
             }
         });
