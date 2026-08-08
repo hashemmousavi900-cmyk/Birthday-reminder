@@ -418,6 +418,141 @@
             animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
+        /* ======================================== */
+        /* 🎨 استایل مودال رمز */
+        /* ======================================== */
+        .password-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .password-overlay.active {
+            display: flex;
+        }
+        
+        .password-modal {
+            background: #fff;
+            border-radius: 24px;
+            padding: 32px 36px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            direction: rtl;
+        }
+        
+        @keyframes modalPop {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .password-modal .modal-icon {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+        
+        .password-modal .modal-title {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+        
+        .password-modal .modal-desc {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .password-modal .modal-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Vazirmatn', sans-serif;
+            outline: none;
+            transition: border-color 0.3s ease;
+            text-align: center;
+            letter-spacing: 4px;
+            direction: ltr;
+        }
+        
+        .password-modal .modal-input:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        .password-modal .modal-input.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            animation: shake 0.4s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        
+        .password-modal .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        
+        .password-modal .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .password-modal .modal-btn.confirm {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: #fff;
+        }
+        
+        .password-modal .modal-btn.confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+        
+        .password-modal .modal-btn.cancel {
+            background: #f1f5f9;
+            color: var(--text-muted);
+        }
+        
+        .password-modal .modal-btn.cancel:hover {
+            background: #e2e8f0;
+        }
+        
+        .password-modal .modal-error {
+            text-align: center;
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .password-modal .modal-error.show {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .portal-container { padding: 24px 18px; border-radius: 24px; }
             .form-grid { grid-template-columns: 60px 1fr 1fr; }
@@ -449,10 +584,30 @@
             .popover .countdown-item .countdown-number {
                 font-size: 1.1rem;
             }
+            .password-modal {
+                padding: 24px 20px;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- ========================================== -->
+    <!-- 🎯 مودال رمز -->
+    <!-- ========================================== -->
+    <div class="password-overlay" id="passwordOverlay">
+        <div class="password-modal">
+            <div class="modal-icon">🔐</div>
+            <div class="modal-title">تأیید رمز</div>
+            <div class="modal-desc" id="modalDesc">برای ادامه، رمز را وارد کنید</div>
+            <input type="password" class="modal-input" id="passwordInput" placeholder="******" maxlength="20" autocomplete="off">
+            <div class="modal-error" id="modalError">رمز وارد شده اشتباه است!</div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" id="modalCancel">انصراف</button>
+                <button class="modal-btn confirm" id="modalConfirm">تأیید</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================== -->
     <!-- 🎯 Popover (پاپ‌آپ) -->
@@ -617,6 +772,14 @@
         const todayDate = document.getElementById('todayDate');
         const btnText = document.getElementById('btnText');
 
+        // Password Modal Elements
+        const passwordOverlay = document.getElementById('passwordOverlay');
+        const passwordInput = document.getElementById('passwordInput');
+        const modalConfirm = document.getElementById('modalConfirm');
+        const modalCancel = document.getElementById('modalCancel');
+        const modalError = document.getElementById('modalError');
+        const modalDesc = document.getElementById('modalDesc');
+
         // Popover Elements
         const popover = document.getElementById('popover');
         const popoverAvatar = document.getElementById('popoverAvatar');
@@ -635,6 +798,10 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc';
 
         let dbClient = null;
+        let adminPassword = '20252026'; // پیش‌فرض
+        let pendingAction = null; // برای ذخیره عملیات در انتظار
+        let pendingData = null;
+
         try {
             if (window.supabase) {
                 dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -658,6 +825,103 @@
         let countdownInterval = null;
         let currentPopoverItem = null;
         let popoverTimeout = null;
+
+        // ============================================
+        // 🔐 Password Functions
+        // ============================================
+        async function loadAdminPassword() {
+            if (!dbClient) {
+                console.warn('⚠️ Cannot load password: Supabase not initialized');
+                return;
+            }
+
+            try {
+                const { data, error } = await dbClient
+                    .from('settings')
+                    .select('value')
+                    .eq('key', 'admin_password')
+                    .single();
+
+                if (error) {
+                    console.warn('⚠️ Could not load password from DB, using default:', error.message);
+                    return;
+                }
+
+                if (data && data.value) {
+                    adminPassword = data.value;
+                    console.log('✅ Admin password loaded from database');
+                }
+            } catch (error) {
+                console.warn('⚠️ Error loading password, using default:', error.message);
+            }
+        }
+
+        function showPasswordModal(action, data, description) {
+            pendingAction = action;
+            pendingData = data;
+            passwordInput.value = '';
+            passwordInput.className = 'modal-input';
+            modalError.className = 'modal-error';
+            if (description) {
+                modalDesc.textContent = description;
+            } else {
+                modalDesc.textContent = 'برای ادامه، رمز را وارد کنید';
+            }
+            passwordOverlay.classList.add('active');
+            setTimeout(() => passwordInput.focus(), 100);
+        }
+
+        function hidePasswordModal() {
+            passwordOverlay.classList.remove('active');
+            passwordInput.value = '';
+            passwordInput.className = 'modal-input';
+            modalError.className = 'modal-error';
+            pendingAction = null;
+            pendingData = null;
+        }
+
+        function verifyPassword(input) {
+            return input === adminPassword;
+        }
+
+        function handlePasswordConfirm() {
+            const input = passwordInput.value.trim();
+            if (!input) {
+                passwordInput.className = 'modal-input error';
+                modalError.className = 'modal-error show';
+                modalError.textContent = 'لطفاً رمز را وارد کنید!';
+                return;
+            }
+
+            if (verifyPassword(input)) {
+                // رمز درست است
+                hidePasswordModal();
+                executePendingAction();
+            } else {
+                passwordInput.className = 'modal-input error';
+                modalError.className = 'modal-error show';
+                modalError.textContent = 'رمز وارد شده اشتباه است!';
+                passwordInput.value = '';
+                setTimeout(() => passwordInput.focus(), 300);
+            }
+        }
+
+        function executePendingAction() {
+            if (!pendingAction) return;
+            
+            const action = pendingAction;
+            const data = pendingData;
+            pendingAction = null;
+            pendingData = null;
+
+            if (action === 'add') {
+                doSaveBirthday(data);
+            } else if (action === 'edit') {
+                doSaveBirthday(data);
+            } else if (action === 'delete') {
+                doDeleteBirthday(data);
+            }
+        }
 
         // ============================================
         // 📅 Jalali Calendar Functions
@@ -712,7 +976,7 @@
         }
 
         // ============================================
-        // 💾 CRUD Operations
+        // 💾 CRUD Operations (with password protection)
         // ============================================
         async function loadBirthdays() {
             if (!dbClient) {
@@ -740,7 +1004,62 @@
             }
         }
 
-        async function saveBirthday() {
+        // تابع اصلی ذخیره (بدون بررسی رمز - فقط برای اجرا)
+        async function doSaveBirthday(data) {
+            if (!dbClient) {
+                alert('اتصال به سرور برقرار نیست.');
+                return;
+            }
+
+            try {
+                addBtn.classList.add('loading');
+                addBtn.innerHTML = `
+                    <svg class="icon" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;">
+                        <path d="M12 4V8L16 4L12 0V4Z"/>
+                        <path d="M12 20V16L8 20L12 24V20Z" opacity="0.5"/>
+                        <path d="M4 12H8L4 8L0 12H4Z" opacity="0.3"/>
+                        <path d="M20 12H16L20 16L24 12H20Z" opacity="0.7"/>
+                    </svg>
+                    در حال ذخیره...
+                `;
+                const style = document.createElement('style');
+                style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
+                document.head.appendChild(style);
+
+                if (editingId) {
+                    const { error } = await dbClient
+                        .from('birthdays')
+                        .update(data)
+                        .eq('id', editingId);
+
+                    if (error) throw error;
+                } else {
+                    const { error } = await dbClient
+                        .from('birthdays')
+                        .insert([data]);
+
+                    if (error) throw error;
+                }
+
+                resetForm();
+                hidePopover();
+                await loadBirthdays();
+            } catch (error) {
+                console.error('❌ Save error:', error);
+                alert('خطا در ذخیره‌سازی: ' + error.message);
+            } finally {
+                addBtn.classList.remove('loading');
+                addBtn.innerHTML = `
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                    </svg>
+                    <span id="btnText">افزودن</span>
+                `;
+            }
+        }
+
+        // تابع ذخیره با بررسی رمز
+        function saveBirthdayWithPassword() {
             const name = nameInput.value.trim();
             if (!name) {
                 nameInput.style.borderColor = 'var(--danger)';
@@ -765,61 +1084,15 @@
                 image: currentImage || null
             };
 
-            if (!dbClient) {
-                alert('اتصال به سرور برقرار نیست.');
-                return;
-            }
-
-            try {
-                addBtn.classList.add('loading');
-                addBtn.innerHTML = `
-                    <svg class="icon" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;">
-                        <path d="M12 4V8L16 4L12 0V4Z"/>
-                        <path d="M12 20V16L8 20L12 24V20Z" opacity="0.5"/>
-                        <path d="M4 12H8L4 8L0 12H4Z" opacity="0.3"/>
-                        <path d="M20 12H16L20 16L24 12H20Z" opacity="0.7"/>
-                    </svg>
-                    در حال ذخیره...
-                `;
-                const style = document.createElement('style');
-                style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
-                document.head.appendChild(style);
-
-                if (editingId) {
-                    const { error } = await dbClient
-                        .from('birthdays')
-                        .update(payload)
-                        .eq('id', editingId);
-
-                    if (error) throw error;
-                } else {
-                    const { error } = await dbClient
-                        .from('birthdays')
-                        .insert([payload]);
-
-                    if (error) throw error;
-                }
-
-                resetForm();
-                hidePopover();
-                await loadBirthdays();
-            } catch (error) {
-                console.error('❌ Save error:', error);
-                alert('خطا در ذخیره‌سازی: ' + error.message);
-            } finally {
-                addBtn.classList.remove('loading');
-                addBtn.innerHTML = `
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
-                    </svg>
-                    <span id="btnText">افزودن</span>
-                `;
-            }
+            const action = editingId ? 'edit' : 'add';
+            const desc = editingId ? 'برای ویرایش این تولد، رمز را وارد کنید' : 'برای افزودن تولد جدید، رمز را وارد کنید';
+            
+            showPasswordModal(action, payload, desc);
         }
 
-        async function deleteBirthday(id) {
+        // تابع اصلی حذف (بدون بررسی رمز)
+        async function doDeleteBirthday(id) {
             if (!dbClient) return;
-            if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
 
             try {
                 const { error } = await dbClient
@@ -836,6 +1109,12 @@
                 console.error('❌ Delete error:', error);
                 alert('خطا در حذف: ' + error.message);
             }
+        }
+
+        // تابع حذف با بررسی رمز
+        function deleteBirthdayWithPassword(id) {
+            const desc = 'برای حذف این تولد، رمز را وارد کنید';
+            showPasswordModal('delete', id, desc);
         }
 
         function editPerson(id) {
@@ -959,16 +1238,14 @@
         }
 
         // ============================================
-        // 🎯 Popover Functions (اصلاح شده)
+        // 🎯 Popover Functions
         // ============================================
         function showPopover(event, item) {
-            // Clear any pending hide timeout
             if (popoverTimeout) {
                 clearTimeout(popoverTimeout);
                 popoverTimeout = null;
             }
             
-            // If same item is already shown, just update countdown
             if (currentPopoverItem && currentPopoverItem.id === item.id && popover.classList.contains('active')) {
                 updateCountdown(item);
                 return;
@@ -977,7 +1254,6 @@
             currentPopoverItem = item;
             const stats = calculateBirthdayStats(item);
             
-            // Avatar
             if (item.image) {
                 popoverAvatar.style.backgroundImage = `url('${item.image}')`;
                 popoverAvatar.classList.add('has-image');
@@ -989,20 +1265,16 @@
                 popoverAvatar.style.background = 'linear-gradient(135deg, var(--accent-1), var(--accent-2))';
             }
             
-            // Name
             popoverName.textContent = item.name;
             
-            // Birthday
             const dateText = `${toFa(item.day)} ${persianMonths[item.month-1]} ${item.year ? toFa(item.year) : ''}`;
             popoverBirthday.textContent = `🎂 ${dateText}`;
             
-            // Position popover
             const rect = event.currentTarget.getBoundingClientRect();
             const popoverWidth = Math.min(320, window.innerWidth - 40);
             let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
             let top = rect.bottom + 16;
             
-            // Adjust if out of viewport
             if (top + 300 > window.innerHeight) {
                 top = rect.top - 300 - 16;
             }
@@ -1015,10 +1287,7 @@
             popover.style.top = top + 'px';
             popover.style.minWidth = Math.min(popoverWidth, 320) + 'px';
             
-            // Show popover
             popover.classList.add('active');
-            
-            // Start countdown
             startCountdown(item);
         }
         
@@ -1028,7 +1297,6 @@
                 popoverTimeout = null;
             }
             
-            // Don't hide if mouse is over popover
             if (popover.matches(':hover')) {
                 return;
             }
@@ -1155,7 +1423,6 @@
                 const avatarStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
                 const avatarContent = item.image ? '' : item.name.charAt(0);
                 
-                // ساخت Tooltip برای سن
                 let tooltipText = '';
                 if (item.year && item.upcomingAge !== null) {
                     tooltipText = `${toFa(item.upcomingAge)} ساله می‌شود`;
@@ -1239,7 +1506,7 @@
                 birthdayList.appendChild(li);
             });
 
-            // Event listeners for popover (hover on birthday-item)
+            // Event listeners for popover
             document.querySelectorAll('.birthday-item').forEach((el, index) => {
                 const item = sorted[index];
                 
@@ -1248,7 +1515,6 @@
                 });
                 
                 el.addEventListener('mouseleave', function(e) {
-                    // Check if moving to popover
                     const relatedTarget = e.relatedTarget;
                     if (relatedTarget && popover.contains(relatedTarget)) {
                         return;
@@ -1257,12 +1523,12 @@
                 });
             });
 
-            // Event listeners for edit/delete buttons
+            // Event listeners for edit/delete buttons (with password)
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const id = Number(this.dataset.id);
-                    deleteBirthday(id);
+                    deleteBirthdayWithPassword(id);
                 });
             });
 
@@ -1276,7 +1542,33 @@
         }
 
         // ============================================
-        // 🎯 Popover Event Listeners (اصلاح شده)
+        // 🎯 Password Modal Event Listeners
+        // ============================================
+        modalConfirm.addEventListener('click', handlePasswordConfirm);
+        modalCancel.addEventListener('click', hidePasswordModal);
+        
+        passwordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                handlePasswordConfirm();
+            } else if (e.key === 'Escape') {
+                hidePasswordModal();
+            }
+            // Clear error on typing
+            if (this.className.includes('error')) {
+                this.className = 'modal-input';
+                modalError.className = 'modal-error';
+            }
+        });
+
+        // Close modal on overlay click
+        passwordOverlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                hidePasswordModal();
+            }
+        });
+
+        // ============================================
+        // 🎯 Popover Event Listeners
         // ============================================
         popover.addEventListener('mouseenter', function() {
             if (popoverTimeout) {
@@ -1325,10 +1617,15 @@
         if (monthSelect) monthSelect.addEventListener('change', updateDays);
         if (yearSelect) yearSelect.addEventListener('change', updateDays);
         if (cancelBtn) cancelBtn.addEventListener('click', resetForm);
-        if (addBtn) addBtn.addEventListener('click', saveBirthday);
+        
+        // Add button with password protection
+        if (addBtn) {
+            addBtn.addEventListener('click', saveBirthdayWithPassword);
+        }
+        
         if (nameInput) {
             nameInput.addEventListener('keypress', (e) => { 
-                if(e.key === 'Enter') saveBirthday(); 
+                if(e.key === 'Enter') saveBirthdayWithPassword(); 
             });
         }
 
@@ -1336,6 +1633,9 @@
         // 🚀 Initialize App
         // ============================================
         async function initApp() {
+            // First load password from database
+            await loadAdminPassword();
+            
             populateDateSelects();
             renderList();
             
