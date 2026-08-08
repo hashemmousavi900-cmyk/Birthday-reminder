@@ -753,7 +753,6 @@
     </div>
 
     <script>
-       <script>
     (function() {
         "use strict";
 
@@ -799,8 +798,8 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc';
 
         let dbClient = null;
-        let adminPassword = '20252026'; // پیش‌فرض
-        let pendingAction = null; // برای ذخیره عملیات در انتظار
+        let adminPassword = '20252026';
+        let pendingAction = null;
         let pendingData = null;
 
         try {
@@ -877,7 +876,6 @@
             passwordInput.value = '';
             passwordInput.className = 'modal-input';
             modalError.className = 'modal-error';
-            // توجه: pendingAction رو پاک نمیکنیم تا بعد از تایید اجرا بشه
         }
 
         function verifyPassword(input) {
@@ -894,17 +892,14 @@
             }
 
             if (verifyPassword(input)) {
-                // رمز درست است - بستن مودال و اجرای عملیات
                 const action = pendingAction;
                 const data = pendingData;
                 
-                // پاک کردن pending ها قبل از اجرا
                 pendingAction = null;
                 pendingData = null;
                 
                 hidePasswordModal();
                 
-                // اجرای عملیات با تاخیر کم برای اطمینان از بسته شدن مودال
                 setTimeout(() => {
                     if (action === 'add' || action === 'edit') {
                         doSaveBirthday(data);
@@ -976,7 +971,7 @@
         }
 
         // ============================================
-        // 💾 CRUD Operations (with password protection)
+        // 💾 CRUD Operations
         // ============================================
         async function loadBirthdays() {
             if (!dbClient) {
@@ -1004,7 +999,6 @@
             }
         }
 
-        // تابع اصلی ذخیره (بدون بررسی رمز - فقط برای اجرا)
         async function doSaveBirthday(data) {
             if (!dbClient) {
                 alert('اتصال به سرور برقرار نیست.');
@@ -1022,7 +1016,6 @@
                     </svg>
                     در حال ذخیره...
                 `;
-                // اضافه کردن استایل انیمیشن اگر وجود نداشت
                 if (!document.getElementById('spinStyle')) {
                     const style = document.createElement('style');
                     style.id = 'spinStyle';
@@ -1048,7 +1041,6 @@
                 hidePopover();
                 await loadBirthdays();
                 
-                // پیام موفقیت
                 const msg = editingId ? '✅ تولد با موفقیت ویرایش شد!' : '✅ تولد با موفقیت اضافه شد!';
                 showToast(msg);
                 
@@ -1063,15 +1055,13 @@
                     </svg>
                     <span id="btnText">افزودن</span>
                 `;
-                // آپدیت btnText
                 const newBtnText = document.getElementById('btnText');
                 if (newBtnText) {
-                    newBtnText.textContent = editingId ? 'افزودن' : 'افزودن';
+                    newBtnText.textContent = 'افزودن';
                 }
             }
         }
 
-        // تابع ذخیره با بررسی رمز
         function saveBirthdayWithPassword() {
             const name = nameInput.value.trim();
             if (!name) {
@@ -1103,7 +1093,6 @@
             showPasswordModal(action, payload, desc);
         }
 
-        // تابع اصلی حذف (بدون بررسی رمز)
         async function doDeleteBirthday(id) {
             if (!dbClient) return;
 
@@ -1125,7 +1114,6 @@
             }
         }
 
-        // تابع حذف با بررسی رمز
         function deleteBirthdayWithPassword(id) {
             const desc = '🔐 برای حذف این تولد، رمز را وارد کنید';
             showPasswordModal('delete', id, desc);
@@ -1161,7 +1149,6 @@
         // 🎨 Toast Notification
         // ============================================
         function showToast(message) {
-            // حذف toast قبلی
             const oldToast = document.querySelector('.toast-notification');
             if (oldToast) oldToast.remove();
             
@@ -1190,13 +1177,11 @@
             `;
             document.body.appendChild(toast);
             
-            // نمایش با انیمیشن
             setTimeout(() => {
                 toast.style.opacity = '1';
                 toast.style.transform = 'translateX(-50%) translateY(0)';
             }, 10);
             
-            // مخفی کردن بعد از ۳ ثانیه
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(-50%) translateY(100px)';
@@ -1313,7 +1298,6 @@
             }
             
             currentPopoverItem = item;
-            const stats = calculateBirthdayStats(item);
             
             if (item.image) {
                 popoverAvatar.style.backgroundImage = `url('${item.image}')`;
@@ -1567,7 +1551,6 @@
                 birthdayList.appendChild(li);
             });
 
-            // Event listeners for popover
             document.querySelectorAll('.birthday-item').forEach((el, index) => {
                 const item = sorted[index];
                 
@@ -1584,7 +1567,6 @@
                 });
             });
 
-            // Event listeners for edit/delete buttons (with password)
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -1620,14 +1602,12 @@
                 pendingData = null;
                 hidePasswordModal();
             }
-            // Clear error on typing
             if (this.className.includes('error')) {
                 this.className = 'modal-input';
                 modalError.className = 'modal-error';
             }
         });
 
-        // Close modal on overlay click
         passwordOverlay.addEventListener('click', function(e) {
             if (e.target === this) {
                 pendingAction = null;
@@ -1687,7 +1667,6 @@
         if (yearSelect) yearSelect.addEventListener('change', updateDays);
         if (cancelBtn) cancelBtn.addEventListener('click', resetForm);
         
-        // Add button with password protection
         if (addBtn) {
             addBtn.addEventListener('click', saveBirthdayWithPassword);
         }
@@ -1702,12 +1681,9 @@
         // 🚀 Initialize App
         // ============================================
         async function initApp() {
-            // First load password from database
             await loadAdminPassword();
-            
             populateDateSelects();
             renderList();
-            
             if (dbClient) {
                 await loadBirthdays();
             }
