@@ -136,6 +136,7 @@
             background: #fff; border-radius: 16px; padding: 16px 20px; display: flex; justify-content: space-between;
             align-items: center; border: 1px solid var(--border-light); transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
             animation: slideIn 0.4s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02); position: relative; z-index: 1; 
+            cursor: pointer;
         }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -155,30 +156,37 @@
         .item-right { display: flex; align-items: center; gap: 8px; }
         
         .countdown-badge {
-            padding: 8px 16px; border-radius: 10px; font-size: 1rem; font-weight: 700;
-            display: flex; align-items: center; gap: 8px; background: #f1f5f9; color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            color: var(--text-main);
             cursor: default;
             position: relative;
             transition: all 0.3s ease;
         }
         
-        /* Tooltip استایل */
         .countdown-badge .tooltip {
             display: none;
             position: absolute;
-            bottom: calc(100% + 10px);
+            bottom: calc(100% + 8px);
             left: 50%;
             transform: translateX(-50%);
             background: #1e293b;
             color: #fff;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
             font-weight: 600;
             white-space: nowrap;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 9999;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
             pointer-events: none;
+            letter-spacing: 0.3px;
         }
         
         .countdown-badge .tooltip::after {
@@ -187,7 +195,7 @@
             top: 100%;
             left: 50%;
             transform: translateX(-50%);
-            border: 6px solid transparent;
+            border: 4px solid transparent;
             border-top-color: #1e293b;
         }
         
@@ -195,12 +203,24 @@
             display: block;
         }
         
+        .birthday-item:first-child .countdown-badge .tooltip {
+            bottom: auto;
+            top: calc(100% + 8px);
+        }
+        
+        .birthday-item:first-child .countdown-badge .tooltip::after {
+            top: auto;
+            bottom: 100%;
+            border-top-color: transparent;
+            border-bottom-color: #1e293b;
+        }
+        
         .countdown-badge.soon { 
             background: #fffbeb; color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); 
         }
         .countdown-badge.today {
             background: linear-gradient(135deg, #ec4899, #be185d); color: #fff; border: none;
-            font-weight: 800; font-size: 1.1rem; padding: 10px 20px; border-radius: 15px 5px 15px 5px; 
+            font-weight: 800; font-size: 1rem; padding: 8px 16px; border-radius: 15px 5px 15px 5px; 
             box-shadow: 0 6px 18px -4px rgba(236, 72, 153, 0.5); animation: pulseBold 1.8s infinite; transform: rotate(-3deg); 
         }
         .countdown-badge.today .tooltip {
@@ -208,6 +228,11 @@
         }
         .countdown-badge.today .tooltip::after {
             border-top-color: #be185d;
+        }
+        
+        .birthday-item:first-child .countdown-badge.today .tooltip::after {
+            border-top-color: transparent;
+            border-bottom-color: #be185d;
         }
         
         @keyframes pulseBold {
@@ -229,10 +254,170 @@
 
         /* SVG Icon Styles */
         .icon { width: 20px; height: 20px; display: inline-block; vertical-align: middle; fill: currentColor; stroke: none; flex-shrink: 0; }
-        .icon-sm { width: 16px; height: 16px; }
+        .icon-sm { width: 14px; height: 14px; }
         .icon-lg { width: 24px; height: 24px; }
         .icon-white { color: #fff; }
         .icon-accent { color: var(--accent-1); }
+
+        /* ======================================== */
+        /* 🎨 استایل پاپ‌آپ (Popover) */
+        /* ======================================== */
+        .popover {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px 28px 28px 28px;
+            min-width: 280px;
+            max-width: 320px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(139, 92, 246, 0.1);
+            opacity: 0;
+            transform: scale(0.85) translateY(10px);
+            transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            direction: rtl;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        
+        .popover.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+        
+        .popover::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 10px solid transparent;
+            border-top-color: #fff;
+            filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.05));
+        }
+        
+        .popover .popover-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin: 0 auto 12px auto;
+            background-size: cover;
+            background-position: center;
+            background-color: #e2e8f0;
+            border: 3px solid var(--accent-1);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        }
+        
+        .popover .popover-avatar.has-image {
+            background: #e2e8f0;
+        }
+        
+        .popover .popover-name {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+        
+        .popover .popover-birthday {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+        
+        .popover .popover-divider {
+            height: 1px;
+            background: linear-gradient(to left, transparent, var(--border-light), transparent);
+            margin: 10px 0 14px 0;
+        }
+        
+        .popover .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            direction: ltr;
+        }
+        
+        .popover .countdown-item {
+            text-align: center;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 6px 10px;
+            min-width: 50px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .popover .countdown-item .countdown-number {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-1);
+            font-family: 'Vazirmatn', sans-serif;
+            line-height: 1.3;
+            direction: ltr;
+        }
+        
+        .popover .countdown-item .countdown-label {
+            font-size: 0.55rem;
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            direction: rtl;
+        }
+        
+        .popover .countdown-item.highlight {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            border-color: var(--accent-1);
+        }
+        
+        .popover .countdown-item.highlight .countdown-number {
+            color: #fff;
+        }
+        
+        .popover .countdown-item.highlight .countdown-label {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .popover .popover-close {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s ease;
+            padding: 4px;
+            line-height: 1;
+        }
+        
+        .popover .popover-close:hover {
+            color: var(--danger);
+        }
+
+        /* افکت ورود پاپ‌آپ */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.7) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .popover.active {
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
 
         @media (max-width: 768px) {
             .portal-container { padding: 24px 18px; border-radius: 24px; }
@@ -242,16 +427,66 @@
             .btn-add, .btn-cancel { width: 100%; }
             .birthday-item { flex-direction: column; align-items: flex-start; gap: 12px; }
             .item-right { width: 100%; justify-content: space-between; }
-            .countdown-badge .tooltip {
-                left: auto;
-                right: 0;
-                transform: none;
+            .popover {
+                min-width: 220px;
+                max-width: 260px;
+                padding: 18px 16px 20px 16px;
+                left: 50% !important;
+                top: 50% !important;
+                transform: translate(-50%, -50%) scale(0.85) !important;
+            }
+            .popover.active {
+                transform: translate(-50%, -50%) scale(1) !important;
+            }
+            .popover .popover-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+            .popover .countdown-item {
+                min-width: 40px;
+                padding: 4px 8px;
+            }
+            .popover .countdown-item .countdown-number {
+                font-size: 1.1rem;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- ========================================== -->
+    <!-- 🎯 Popover (پاپ‌آپ) -->
+    <!-- ========================================== -->
+    <div class="popover" id="popover">
+        <button class="popover-close" id="popoverClose">✕</button>
+        <div class="popover-avatar" id="popoverAvatar">👤</div>
+        <div class="popover-name" id="popoverName">نام</div>
+        <div class="popover-birthday" id="popoverBirthday">تاریخ تولد</div>
+        <div class="popover-divider"></div>
+        <div class="countdown-container" id="countdownContainer">
+            <div class="countdown-item highlight">
+                <div class="countdown-number" id="cdDays">--</div>
+                <div class="countdown-label">روز</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="cdHours">--</div>
+                <div class="countdown-label">ساعت</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="cdMinutes">--</div>
+                <div class="countdown-label">دقیقه</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="cdSeconds">--</div>
+                <div class="countdown-label">ثانیه</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🎯 محتوای اصلی -->
+    <!-- ========================================== -->
     <div class="particles">
         <div class="particle" style="left: 10%; width: 4px; height: 4px; animation-duration: 20s;"></div>
         <div class="particle" style="left: 30%; width: 6px; height: 6px; animation-duration: 25s; animation-delay: 3s; background: rgba(236, 72, 153, 0.2);"></div>
@@ -383,6 +618,17 @@
         const todayDate = document.getElementById('todayDate');
         const btnText = document.getElementById('btnText');
 
+        // Popover Elements
+        const popover = document.getElementById('popover');
+        const popoverAvatar = document.getElementById('popoverAvatar');
+        const popoverName = document.getElementById('popoverName');
+        const popoverBirthday = document.getElementById('popoverBirthday');
+        const popoverClose = document.getElementById('popoverClose');
+        const cdDays = document.getElementById('cdDays');
+        const cdHours = document.getElementById('cdHours');
+        const cdMinutes = document.getElementById('cdMinutes');
+        const cdSeconds = document.getElementById('cdSeconds');
+
         // ============================================
         // 🔑 Supabase Config
         // ============================================
@@ -410,6 +656,8 @@
         let birthdays = [];
         let editingId = null;
         let currentImage = null;
+        let popoverData = null;
+        let countdownInterval = null;
 
         // ============================================
         // 📅 Jalali Calendar Functions
@@ -581,6 +829,7 @@
                 if (error) throw error;
 
                 if (editingId === id) resetForm();
+                hidePopover();
                 await loadBirthdays();
             } catch (error) {
                 console.error('❌ Delete error:', error);
@@ -609,6 +858,7 @@
             
             if (btnText) btnText.textContent = 'به‌روزرسانی';
             cancelBtn.style.display = 'flex';
+            hidePopover();
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -679,7 +929,7 @@
         }
 
         function calculateBirthdayStats(b) {
-            if (!b.month || !b.day) return { daysLeft: null, upcomingAge: null };
+            if (!b.month || !b.day) return { daysLeft: null, upcomingAge: null, nextBday: null };
             
             const jMonth = b.month;
             const jDay = b.day;
@@ -704,9 +954,128 @@
                 if (m < 0 || (m === 0 && todayMidnight.getDate() < birthDate.getDate())) age--;
                 upcomingAge = daysLeft === 0 ? age : age + 1;
             }
-            return { daysLeft, upcomingAge };
+            return { daysLeft, upcomingAge, nextBday: nextBdayGreg };
         }
 
+        // ============================================
+        // 🎯 Popover Functions
+        // ============================================
+        function showPopover(event, item) {
+            const stats = calculateBirthdayStats(item);
+            
+            // Set data
+            popoverData = { item, stats };
+            
+            // Avatar
+            if (item.image) {
+                popoverAvatar.style.backgroundImage = `url(${item.image})`;
+                popoverAvatar.classList.add('has-image');
+                popoverAvatar.textContent = '';
+            } else {
+                popoverAvatar.style.backgroundImage = '';
+                popoverAvatar.classList.remove('has-image');
+                popoverAvatar.textContent = item.name.charAt(0);
+                popoverAvatar.style.background = 'linear-gradient(135deg, var(--accent-1), var(--accent-2))';
+            }
+            
+            // Name
+            popoverName.textContent = item.name;
+            
+            // Birthday
+            const dateText = `${toFa(item.day)} ${persianMonths[item.month-1]} ${item.year ? toFa(item.year) : ''}`;
+            popoverBirthday.textContent = `🎂 ${dateText}`;
+            
+            // Position popover
+            const rect = event.currentTarget.getBoundingClientRect();
+            const popoverWidth = Math.min(320, window.innerWidth - 40);
+            let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
+            let top = rect.bottom + 16;
+            
+            // Adjust if out of viewport
+            if (top + 300 > window.innerHeight) {
+                top = rect.top - 300 - 16;
+            }
+            if (left < 10) left = 10;
+            if (left + popoverWidth > window.innerWidth - 10) {
+                left = window.innerWidth - popoverWidth - 10;
+            }
+            
+            popover.style.left = left + 'px';
+            popover.style.top = top + 'px';
+            popover.style.minWidth = Math.min(popoverWidth, 320) + 'px';
+            
+            // Show popover
+            popover.classList.add('active');
+            
+            // Start countdown
+            startCountdown(item);
+        }
+        
+        function hidePopover() {
+            popover.classList.remove('active');
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            popoverData = null;
+        }
+        
+        function startCountdown(item) {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            
+            updateCountdown(item);
+            countdownInterval = setInterval(() => {
+                updateCountdown(item);
+            }, 1000);
+        }
+        
+        function updateCountdown(item) {
+            if (!item.month || !item.day) {
+                cdDays.textContent = '--';
+                cdHours.textContent = '--';
+                cdMinutes.textContent = '--';
+                cdSeconds.textContent = '--';
+                return;
+            }
+            
+            const now = new Date();
+            const stats = calculateBirthdayStats(item);
+            const target = stats.nextBday;
+            
+            if (!target) {
+                cdDays.textContent = '--';
+                cdHours.textContent = '--';
+                cdMinutes.textContent = '--';
+                cdSeconds.textContent = '--';
+                return;
+            }
+            
+            const diff = target - now;
+            if (diff <= 0) {
+                cdDays.textContent = '🎉';
+                cdHours.textContent = '🎉';
+                cdMinutes.textContent = '🎉';
+                cdSeconds.textContent = '🎉';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            cdDays.textContent = String(days).padStart(2, '0');
+            cdHours.textContent = String(hours).padStart(2, '0');
+            cdMinutes.textContent = String(minutes).padStart(2, '0');
+            cdSeconds.textContent = String(seconds).padStart(2, '0');
+        }
+
+        // ============================================
+        // 🎨 Render List
+        // ============================================
         function renderList() {
             birthdayList.innerHTML = '';
             
@@ -742,7 +1111,7 @@
 
             counterBadge.textContent = `${toFa(birthdays.length)} نفر`;
 
-            sorted.forEach(item => {
+            sorted.forEach((item, index) => {
                 const li = document.createElement('li');
                 li.className = 'birthday-item';
                 
@@ -794,6 +1163,7 @@
                 }
 
                 const dateText = `${toFa(item.day)} ${persianMonths[item.month-1]} ${item.year ? toFa(item.year) : ''}`;
+                const isFirst = index === 0;
                 
                 li.innerHTML = `
                     <div class="item-left">
@@ -811,7 +1181,7 @@
                         </div>
                     </div>
                     <div class="item-right">
-                        <div class="${badgeClass}">
+                        <div class="${badgeClass} ${isFirst ? 'first-item' : ''}">
                             ${badgeContent}
                             ${tooltipText ? `<span class="tooltip">🎂 ${tooltipText}</span>` : ''}
                         </div>
@@ -832,9 +1202,32 @@
                 birthdayList.appendChild(li);
             });
 
-            // Event listeners
+            // Event listeners for popover (hover on birthday-item)
+            document.querySelectorAll('.birthday-item').forEach((el, index) => {
+                const item = sorted[index];
+                
+                el.addEventListener('mouseenter', (e) => {
+                    showPopover(e, item);
+                });
+                
+                el.addEventListener('mouseleave', (e) => {
+                    // Check if mouse is moving to popover
+                    const relatedTarget = e.relatedTarget;
+                    if (relatedTarget && (popover.contains(relatedTarget) || relatedTarget.closest('.popover'))) {
+                        return;
+                    }
+                    setTimeout(() => {
+                        if (!popover.matches(':hover')) {
+                            hidePopover();
+                        }
+                    }, 100);
+                });
+            });
+
+            // Event listeners for edit/delete buttons
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     const id = Number(e.currentTarget.dataset.id);
                     deleteBirthday(id);
                 });
@@ -842,11 +1235,34 @@
 
             document.querySelectorAll('.btn-edit').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     const id = Number(e.currentTarget.dataset.id);
                     editPerson(id);
                 });
             });
         }
+
+        // ============================================
+        // 🎯 Popover Event Listeners
+        // ============================================
+        popover.addEventListener('mouseenter', () => {
+            // Keep popover open when hovering over it
+        });
+        
+        popover.addEventListener('mouseleave', () => {
+            hidePopover();
+        });
+        
+        popoverClose.addEventListener('click', hidePopover);
+        
+        document.addEventListener('click', (e) => {
+            if (popover.classList.contains('active') && !popover.contains(e.target)) {
+                const isItem = e.target.closest('.birthday-item');
+                if (!isItem) {
+                    hidePopover();
+                }
+            }
+        });
 
         // ============================================
         // 🎯 Event Listeners
