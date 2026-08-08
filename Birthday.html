@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <!-- آیکون‌ها -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- کتابخانه Supabase با defer لود می‌شود تا جلوی اجرای کدها را نگیرد -->
+    <!-- کتابخانه Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
     <style>
@@ -359,7 +359,7 @@
                 dbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
             }
         } catch (error) {
-            // خطا در راه‌اندازی Supabase
+            console.error('❌ خطا در راه‌اندازی Supabase:', error.message);
         }
 
         // ============================================
@@ -428,15 +428,12 @@
         // 💾 توابع عملیات CRUD با Supabase
         // ============================================
         async function loadBirthdays() {
-            if (!dbClient) {
-                birthdays = [];
-                renderList();
-                return;
-            }
+            if (!dbClient) return;
 
             try {
+                // تغییر نام جدول به birthdays
                 const { data, error } = await dbClient
-                    .from('app_birthdayreminder.birthdays')
+                    .from('birthdays')
                     .select('*')
                     .order('created_at', { ascending: false });
 
@@ -444,8 +441,7 @@
                 birthdays = data || [];
                 renderList();
             } catch (error) {
-                birthdays = [];
-                renderList();
+                console.error('❌ خطا در دریافت داده‌ها:', error.message);
             }
         }
 
@@ -476,15 +472,17 @@
                 addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
 
                 if (editingId) {
+                    // تغییر نام جدول به birthdays
                     const { error } = await dbClient
-                        .from('app_birthdayreminder.birthdays')
+                        .from('birthdays')
                         .update(data)
                         .eq('id', editingId);
 
                     if (error) throw error;
                 } else {
+                    // تغییر نام جدول به birthdays
                     const { error } = await dbClient
-                        .from('app_birthdayreminder.birthdays')
+                        .from('birthdays')
                         .insert([data]);
 
                     if (error) throw error;
@@ -493,6 +491,7 @@
                 resetForm();
                 await loadBirthdays();
             } catch (error) {
+                console.error('❌ خطا در ذخیره‌سازی:', error.message);
                 alert('خطا در ذخیره‌سازی: ' + error.message);
             } finally {
                 addBtn.classList.remove('loading');
@@ -506,8 +505,9 @@
             if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
 
             try {
+                // تغییر نام جدول به birthdays
                 const { error } = await dbClient
-                    .from('app_birthdayreminder.birthdays')
+                    .from('birthdays')
                     .delete()
                     .eq('id', id);
 
@@ -516,6 +516,7 @@
                 if (editingId === id) resetForm();
                 await loadBirthdays();
             } catch (error) {
+                console.error('❌ خطا در حذف:', error.message);
                 alert('خطا در حذف: ' + error.message);
             }
         }
@@ -757,7 +758,7 @@
         nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') saveBirthday(); });
 
         // ============================================
-        // 🚀   راه‌اندازی اولیه
+        // 🚀 راه‌اندازی اولیه
         // ============================================
         async function initApp() {
             // مقداردهی اولیه تقویم و UI
