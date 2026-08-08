@@ -275,7 +275,7 @@
             opacity: 0;
             transform: scale(0.85) translateY(10px);
             transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            pointer-events: none;
+            pointer-events: auto;
             direction: rtl;
             backdrop-filter: blur(10px);
             background: rgba(255,255,255,0.95);
@@ -285,7 +285,6 @@
             display: block;
             opacity: 1;
             transform: scale(1) translateY(0);
-            pointer-events: auto;
         }
         
         .popover::before {
@@ -304,8 +303,8 @@
             height: 90px;
             border-radius: 50%;
             margin: 0 auto 12px auto;
-            background-size: cover;
-            background-position: center;
+            background-size: cover !important;
+            background-position: center !important;
             background-color: #e2e8f0;
             border: 3px solid var(--accent-1);
             box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25);
@@ -656,8 +655,9 @@
         let birthdays = [];
         let editingId = null;
         let currentImage = null;
-        let popoverData = null;
         let countdownInterval = null;
+        let currentPopoverItem = null;
+        let popoverTimeout = null;
 
         // ============================================
         // 📅 Jalali Calendar Functions
@@ -801,6 +801,7 @@
                 }
 
                 resetForm();
+                hidePopover();
                 await loadBirthdays();
             } catch (error) {
                 console.error('❌ Save error:', error);
@@ -958,17 +959,27 @@
         }
 
         // ============================================
-        // 🎯 Popover Functions
+        // 🎯 Popover Functions (اصلاح شده)
         // ============================================
         function showPopover(event, item) {
-            const stats = calculateBirthdayStats(item);
+            // Clear any pending hide timeout
+            if (popoverTimeout) {
+                clearTimeout(popoverTimeout);
+                popoverTimeout = null;
+            }
             
-            // Set data
-            popoverData = { item, stats };
+            // If same item is already shown, just update countdown
+            if (currentPopoverItem && currentPopoverItem.id === item.id && popover.classList.contains('active')) {
+                updateCountdown(item);
+                return;
+            }
+            
+            currentPopoverItem = item;
+            const stats = calculateBirthdayStats(item);
             
             // Avatar
             if (item.image) {
-                popoverAvatar.style.backgroundImage = `url(${item.image})`;
+                popoverAvatar.style.backgroundImage = `url('${item.image}')`;
                 popoverAvatar.classList.add('has-image');
                 popoverAvatar.textContent = '';
             } else {
@@ -1012,12 +1023,32 @@
         }
         
         function hidePopover() {
+            if (popoverTimeout) {
+                clearTimeout(popoverTimeout);
+                popoverTimeout = null;
+            }
+            
+            // Don't hide if mouse is over popover
+            if (popover.matches(':hover')) {
+                return;
+            }
+            
             popover.classList.remove('active');
             if (countdownInterval) {
                 clearInterval(countdownInterval);
                 countdownInterval = null;
             }
-            popoverData = null;
+            currentPopoverItem = null;
+        }
+        
+        function scheduleHidePopover(delay) {
+            if (popoverTimeout) {
+                clearTimeout(popoverTimeout);
+                popoverTimeout = null;
+            }
+            popoverTimeout = setTimeout(() => {
+                hidePopover();
+            }, delay || 200);
         }
         
         function startCountdown(item) {
@@ -1028,7 +1059,12 @@
             
             updateCountdown(item);
             countdownInterval = setInterval(() => {
-                updateCountdown(item);
+                if (currentPopoverItem && currentPopoverItem.id === item.id) {
+                    updateCountdown(item);
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
             }, 1000);
         }
         
@@ -1114,6 +1150,7 @@
             sorted.forEach((item, index) => {
                 const li = document.createElement('li');
                 li.className = 'birthday-item';
+                li.dataset.id = item.id;
                 
                 const avatarStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
                 const avatarContent = item.image ? '' : item.name.charAt(0);
@@ -1206,59 +1243,61 @@
             document.querySelectorAll('.birthday-item').forEach((el, index) => {
                 const item = sorted[index];
                 
-                el.addEventListener('mouseenter', (e) => {
+                el.addEventListener('mouseenter', function(e) {
                     showPopover(e, item);
                 });
                 
-                el.addEventListener('mouseleave', (e) => {
-                    // Check if mouse is moving to popover
+                el.addEventListener('mouseleave', function(e) {
+                    // Check if moving to popover
                     const relatedTarget = e.relatedTarget;
-                    if (relatedTarget && (popover.contains(relatedTarget) || relatedTarget.closest('.popover'))) {
+                    if (relatedTarget && popover.contains(relatedTarget)) {
                         return;
                     }
-                    setTimeout(() => {
-                        if (!popover.matches(':hover')) {
-                            hidePopover();
-                        }
-                    }, 100);
+                    scheduleHidePopover(300);
                 });
             });
 
             // Event listeners for edit/delete buttons
             document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const id = Number(e.currentTarget.dataset.id);
+                    const id = Number(this.dataset.id);
                     deleteBirthday(id);
                 });
             });
 
             document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const id = Number(e.currentTarget.dataset.id);
+                    const id = Number(this.dataset.id);
                     editPerson(id);
                 });
             });
         }
 
         // ============================================
-        // 🎯 Popover Event Listeners
+        // 🎯 Popover Event Listeners (اصلاح شده)
         // ============================================
-        popover.addEventListener('mouseenter', () => {
-            // Keep popover open when hovering over it
+        popover.addEventListener('mouseenter', function() {
+            if (popoverTimeout) {
+                clearTimeout(popoverTimeout);
+                popoverTimeout = null;
+            }
         });
         
-        popover.addEventListener('mouseleave', () => {
+        popover.addEventListener('mouseleave', function() {
+            scheduleHidePopover(200);
+        });
+        
+        popoverClose.addEventListener('click', function() {
             hidePopover();
         });
         
-        popoverClose.addEventListener('click', hidePopover);
-        
-        document.addEventListener('click', (e) => {
-            if (popover.classList.contains('active') && !popover.contains(e.target)) {
+        document.addEventListener('click', function(e) {
+            if (popover.classList.contains('active')) {
                 const isItem = e.target.closest('.birthday-item');
-                if (!isItem) {
+                const isPopover = e.target.closest('.popover');
+                if (!isItem && !isPopover) {
                     hidePopover();
                 }
             }
