@@ -279,7 +279,12 @@
         let dbClient = null;
         try {
             if (window.supabase) {
-                dbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+                // 🔑 معرفی اسکمای سفارشی هنگام ساخت کلاینت
+                dbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
+                    db: {
+                        schema: 'app_birthdayreminder'
+                    }
+                });
             }
         } catch (error) {
             console.error('❌ خطا در راه‌اندازی Supabase:', error.message);
@@ -337,8 +342,7 @@
         async function loadBirthdays() {
             if (!dbClient) return;
             try {
-                // 🔑 اعمال دستی اسکمای app_birthdayreminder برای خواندن
-                const { data, error } = await dbClient.schema('app_birthdayreminder').from('birthdays').select('*').order('created_at', { ascending: false });
+                const { data, error } = await dbClient.from('birthdays').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
                 birthdays = data || [];
                 renderList();
@@ -372,12 +376,10 @@
                 addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
 
                 if (editingId) {
-                    // 🔑 اعمال دستی اسکما برای آپدیت
-                    const { error } = await dbClient.schema('app_birthdayreminder').from('birthdays').update(data).eq('id', editingId);
+                    const { error } = await dbClient.from('birthdays').update(data).eq('id', editingId);
                     if (error) throw error;
                 } else {
-                    // 🔑 اعمال دستی اسکما برای درج
-                    const { error } = await dbClient.schema('app_birthdayreminder').from('birthdays').insert([data]);
+                    const { error } = await dbClient.from('birthdays').insert([data]);
                     if (error) throw error;
                 }
 
@@ -396,8 +398,7 @@
             if (!dbClient) return;
             if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
             try {
-                // 🔑 اعمال دستی اسکما برای حذف
-                const { error } = await dbClient.schema('app_birthdayreminder').from('birthdays').delete().eq('id', id);
+                const { error } = await dbClient.from('birthdays').delete().eq('id', id);
                 if (error) throw error;
                 if (editingId === id) resetForm();
                 await loadBirthdays();
