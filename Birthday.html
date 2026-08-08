@@ -7,10 +7,10 @@
     
     <!-- فونت وزیرمتن -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
-    <!-- آیکون‌ها -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- آیکون‌ها - نسخه پایدار -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- کتابخانه Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
@@ -257,9 +257,12 @@
     </div>
 
     <script>
-    window.addEventListener('DOMContentLoaded', function() {
+    (function() {
         "use strict";
 
+        // ============================================
+        // 🎯 DOM Elements
+        // ============================================
         const nameInput = document.getElementById('nameInput');
         const daySelect = document.getElementById('daySelect');
         const monthSelect = document.getElementById('monthSelect');
@@ -270,31 +273,40 @@
         const counterBadge = document.getElementById('counterBadge');
         const avatarUploadBtn = document.getElementById('avatarUploadBtn');
         const avatarInput = document.getElementById('avatarInput');
+        const todayDate = document.getElementById('todayDate');
+        const btnText = document.getElementById('btnText'); // ← اضافه شد
 
-        const SUPABASE_CONFIG = {
-            url: 'https://buowqguzsrychwoxyqby.supabase.co',
-            anonKey: 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc'
-        };
+        // ============================================
+        // 🔑 Supabase Config
+        // ============================================
+        const SUPABASE_URL = 'https://buowqguzsrychwoxyqby.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Miw4tQ0ppv9S8_bWkrFLIQ_JaCda5jc';
 
         let dbClient = null;
         try {
             if (window.supabase) {
-                // 🔑 معرفی اسکمای سفارشی هنگام ساخت کلاینت
-                dbClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
+                dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     db: {
                         schema: 'app_birthdayreminder'
                     }
                 });
+                console.log('✅ Supabase client initialized with schema: app_birthdayreminder');
             }
         } catch (error) {
             console.error('❌ خطا در راه‌اندازی Supabase:', error.message);
         }
 
+        // ============================================
+        // 📦 Variables
+        // ============================================
         const persianMonths = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
         let birthdays = [];
         let editingId = null;
         let currentImage = null;
 
+        // ============================================
+        // 📅 Jalali Calendar Functions
+        // ============================================
         function toFa(num) {
             if (num === null || num === undefined) return '';
             const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
@@ -335,19 +347,41 @@
             return { gy, gm, gd };
         }
 
+        // ============================================
+        // 📅 Initialize Today Date
+        // ============================================
         const todayGreg = new Date();
         const todayJalali = gregorianToJalali(todayGreg.getFullYear(), todayGreg.getMonth() + 1, todayGreg.getDate());
-        document.getElementById('todayDate').innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
+        if (todayDate) {
+            todayDate.innerText = `امروز: ${toFa(todayJalali.jd)} ${persianMonths[todayJalali.jm - 1]} ${toFa(todayJalali.jy)}`;
+        }
 
+        // ============================================
+        // 💾 CRUD Operations
+        // ============================================
         async function loadBirthdays() {
-            if (!dbClient) return;
+            if (!dbClient) {
+                console.warn('⚠️ Supabase not initialized');
+                renderList();
+                return;
+            }
+
             try {
-                const { data, error } = await dbClient.from('birthdays').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
+                const { data, error } = await dbClient
+                    .from('birthdays')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('❌ Supabase error:', error);
+                    throw error;
+                }
+                
                 birthdays = data || [];
                 renderList();
             } catch (error) {
-                console.error('❌ خطا در دریافت داده‌ها:', error.message);
+                console.error('❌ Error loading birthdays:', error.message);
+                renderList();
             }
         }
 
@@ -356,40 +390,61 @@
             if (!name) {
                 nameInput.style.borderColor = 'var(--danger)';
                 nameInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
-                setTimeout(() => { nameInput.style.borderColor = ''; nameInput.style.boxShadow = ''; }, 1500);
+                setTimeout(() => { 
+                    nameInput.style.borderColor = ''; 
+                    nameInput.style.boxShadow = ''; 
+                }, 1500);
                 return;
             }
+
             if (!monthSelect.value || !daySelect.value) {
-                alert('لطفاً ماه و روز تولد را انتخاب کنید.'); return;
+                alert('لطفاً ماه و روز تولد را انتخاب کنید.');
+                return;
             }
 
-            const data = {
+            const payload = {
                 name: name,
                 year: parseInt(yearSelect.value) || null,
                 month: parseInt(monthSelect.value),
                 day: parseInt(daySelect.value),
-                image: currentImage
+                image: currentImage || null
             };
+
+            if (!dbClient) {
+                alert('اتصال به سرور برقرار نیست.');
+                return;
+            }
 
             try {
                 addBtn.classList.add('loading');
                 addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
 
                 if (editingId) {
-                    const { error } = await dbClient.from('birthdays').update(data).eq('id', editingId);
+                    const { error } = await dbClient
+                        .from('birthdays')
+                        .update(payload)
+                        .eq('id', editingId);
+
                     if (error) throw error;
                 } else {
-                    const { error } = await dbClient.from('birthdays').insert([data]);
+                    const { error } = await dbClient
+                        .from('birthdays')
+                        .insert([payload]);
+
                     if (error) throw error;
                 }
 
                 resetForm();
-                await loadBirthdays();
+                await loadBirthdays(); // ← این باعث رفرش لیست میشه
             } catch (error) {
-                console.error('❌ خطا در ذخیره‌سازی:', error.message);
+                console.error('❌ Save error:', error);
                 alert('خطا در ذخیره‌سازی: ' + error.message);
             } finally {
                 addBtn.classList.remove('loading');
+                // استفاده از btnText که قبلاً تعریف شده
+                if (btnText) {
+                    btnText.textContent = 'افزودن';
+                }
                 addBtn.innerHTML = '<i class="fas fa-plus-circle"></i><span id="btnText">افزودن</span>';
             }
         }
@@ -397,13 +452,19 @@
         async function deleteBirthday(id) {
             if (!dbClient) return;
             if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
+
             try {
-                const { error } = await dbClient.from('birthdays').delete().eq('id', id);
+                const { error } = await dbClient
+                    .from('birthdays')
+                    .delete()
+                    .eq('id', id);
+
                 if (error) throw error;
+
                 if (editingId === id) resetForm();
                 await loadBirthdays();
             } catch (error) {
-                console.error('❌ خطا در حذف:', error.message);
+                console.error('❌ Delete error:', error);
                 alert('خطا در حذف: ' + error.message);
             }
         }
@@ -411,54 +472,74 @@
         function editPerson(id) {
             const person = birthdays.find(b => b.id === id);
             if (!person) return;
+            
             editingId = id;
             nameInput.value = person.name;
             yearSelect.value = person.year || '';
             monthSelect.value = person.month;
             updateDays();
             daySelect.value = person.day;
+            
             currentImage = person.image || null;
             if (currentImage) {
                 avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
                 avatarUploadBtn.classList.add('has-image');
-            } else { resetAvatarUpload(); }
-            document.getElementById('btnText').textContent = 'به‌روزرسانی';
+            } else {
+                resetAvatarUpload();
+            }
+            
+            if (btnText) btnText.textContent = 'به‌روزرسانی';
             addBtn.querySelector('i').className = 'fas fa-check-circle';
             cancelBtn.style.display = 'flex';
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // ============================================
+        // 🎨 UI Functions
+        // ============================================
         function resetForm() {
-            editingId = null; nameInput.value = '';
-            populateDateSelects(); resetAvatarUpload();
-            document.getElementById('btnText').textContent = 'افزودن';
+            editingId = null;
+            nameInput.value = '';
+            populateDateSelects();
+            resetAvatarUpload();
+            if (btnText) btnText.textContent = 'افزودن';
             addBtn.querySelector('i').className = 'fas fa-plus-circle';
             cancelBtn.style.display = 'none';
         }
 
         function resetAvatarUpload() {
-            currentImage = null; avatarInput.value = '';
+            currentImage = null;
+            avatarInput.value = '';
             avatarUploadBtn.style.backgroundImage = '';
             avatarUploadBtn.classList.remove('has-image');
         }
 
         function populateDateSelects() {
             const currentJalaliYear = todayJalali.jy;
+            
             yearSelect.innerHTML = '<option value="">سال</option>';
             for(let y = currentJalaliYear; y >= currentJalaliYear - 100; y--) {
                 const opt = document.createElement('option');
-                opt.value = y; opt.textContent = toFa(y);
+                opt.value = y;
+                opt.textContent = toFa(y);
                 yearSelect.appendChild(opt);
             }
+
             monthSelect.innerHTML = '';
             persianMonths.forEach((m, i) => {
                 const opt = document.createElement('option');
-                opt.value = i + 1; opt.textContent = m;
+                opt.value = i + 1;
+                opt.textContent = m;
                 monthSelect.appendChild(opt);
             });
+            
             updateDays();
-            yearSelect.value = todayJalali.jy; monthSelect.value = todayJalali.jm;
-            updateDays(); daySelect.value = todayJalali.jd;
+            
+            yearSelect.value = todayJalali.jy;
+            monthSelect.value = todayJalali.jm;
+            updateDays();
+            daySelect.value = todayJalali.jd;
         }
 
         function updateDays() {
@@ -466,18 +547,25 @@
             const y = parseInt(yearSelect.value) || todayJalali.jy;
             const daysInMonth = getDaysInJalaliMonth(y, m);
             const previousDay = daySelect.value;
+            
             daySelect.innerHTML = '<option value="">روز</option>';
             for(let d = 1; d <= daysInMonth; d++) {
                 const opt = document.createElement('option');
-                opt.value = d; opt.textContent = toFa(d);
+                opt.value = d;
+                opt.textContent = toFa(d);
                 daySelect.appendChild(opt);
             }
-            if (previousDay && parseInt(previousDay) <= daysInMonth) { daySelect.value = previousDay; }
+            
+            if (previousDay && parseInt(previousDay) <= daysInMonth) {
+                daySelect.value = previousDay;
+            }
         }
 
         function calculateBirthdayStats(b) {
             if (!b.month || !b.day) return { daysLeft: null, upcomingAge: null };
-            const jMonth = b.month; const jDay = b.day;
+            
+            const jMonth = b.month;
+            const jDay = b.day;
             let gBdayThisYear = jalaliToGregorian(todayJalali.jy, jMonth, jDay);
             let bdayDateThisYear = new Date(gBdayThisYear.gy, gBdayThisYear.gm - 1, gBdayThisYear.gd);
             bdayDateThisYear.setHours(0, 0, 0, 0);
@@ -504,29 +592,57 @@
 
         function renderList() {
             birthdayList.innerHTML = '';
+            
             if (!dbClient) {
-                birthdayList.innerHTML = `<li class="empty-state"><i class="fas fa-wifi"></i><p>اتصال به سرور برقرار نشد.</p></li>`;
-                counterBadge.textContent = '۰ نفر'; return;
+                birthdayList.innerHTML = `
+                    <li class="empty-state">
+                        <i class="fas fa-wifi"></i>
+                        <p>اتصال به سرور برقرار نشد.</p>
+                    </li>`;
+                counterBadge.textContent = '۰ نفر';
+                return;
             }
+
             if (birthdays.length === 0) {
-                birthdayList.innerHTML = `<li class="empty-state"><i class="fas fa-calendar-plus"></i><p>هنوز هیچ تولدی ثبت نشده است!</p></li>`;
-                counterBadge.textContent = '۰ نفر'; return;
+                birthdayList.innerHTML = `
+                    <li class="empty-state">
+                        <i class="fas fa-calendar-plus"></i>
+                        <p>هنوز هیچ تولدی ثبت نشده است!</p>
+                    </li>`;
+                counterBadge.textContent = '۰ نفر';
+                return;
             }
-            const sorted = birthdays.map((item) => { const stats = calculateBirthdayStats(item); return { ...item, ...stats }; }).sort((a, b) => (a.daysLeft || 9999) - (b.daysLeft || 9999));
+
+            const sorted = birthdays.map((item) => {
+                const stats = calculateBirthdayStats(item);
+                return { ...item, ...stats };
+            }).sort((a, b) => (a.daysLeft || 9999) - (b.daysLeft || 9999));
+
             counterBadge.textContent = `${toFa(birthdays.length)} نفر`;
 
             sorted.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'birthday-item';
+                
                 const avatarStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
                 const avatarContent = item.image ? '' : item.name.charAt(0);
-                let badgeClass = 'countdown-badge'; let badgeText = '';
-                if(item.daysLeft === 0) { badgeClass += ' today'; badgeText = `<i class="fas fa-gift"></i> امروز! 🎉`; }
-                else if(item.daysLeft <= 7) { badgeClass += ' soon'; badgeText = `<i class="fas fa-hourglass-half"></i> ${toFa(item.daysLeft)} روز`; }
-                else if (item.daysLeft > 7) { badgeText = `<i class="far fa-clock"></i> ${toFa(item.daysLeft)} روز`; }
-                else { badgeText = `<i class="fas fa-calendar-times"></i> ناقص`; }
+                
+                let badgeClass = 'countdown-badge';
+                let badgeText = '';
+                if(item.daysLeft === 0) {
+                    badgeClass += ' today';
+                    badgeText = `<i class="fas fa-gift"></i> امروز! 🎉`;
+                } else if(item.daysLeft !== null && item.daysLeft <= 7) {
+                    badgeClass += ' soon';
+                    badgeText = `<i class="fas fa-hourglass-half"></i> ${toFa(item.daysLeft)} روز`;
+                } else if (item.daysLeft !== null) {
+                    badgeText = `<i class="far fa-clock"></i> ${toFa(item.daysLeft)} روز`;
+                } else {
+                    badgeText = `<i class="fas fa-calendar-times"></i> ناقص`;
+                }
 
                 const dateText = `${toFa(item.day)} ${persianMonths[item.month-1]} ${item.year ? toFa(item.year) : ''}`;
+                
                 li.innerHTML = `
                     <div class="item-left">
                         <div class="avatar" ${avatarStyle}>${avatarContent}</div>
@@ -540,42 +656,81 @@
                     </div>
                     <div class="item-right">
                         <div class="${badgeClass}">${badgeText}</div>
-                        <button class="btn-icon btn-edit" data-id="${item.id}" title="ویرایش"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon btn-delete" data-id="${item.id}" title="حذف"><i class="fas fa-trash-alt"></i></button>
-                    </div>`;
+                        <button class="btn-icon btn-edit" data-id="${item.id}" title="ویرایش">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon btn-delete" data-id="${item.id}" title="حذف">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
                 birthdayList.appendChild(li);
             });
 
-            document.querySelectorAll('.btn-delete').forEach(btn => { btn.addEventListener('click', (e) => { deleteBirthday(e.currentTarget.dataset.id); }); });
-            document.querySelectorAll('.btn-edit').forEach(btn => { btn.addEventListener('click', (e) => { editPerson(e.currentTarget.dataset.id); }); });
+            // Event listeners
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = Number(e.currentTarget.dataset.id);
+                    deleteBirthday(id);
+                });
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = Number(e.currentTarget.dataset.id);
+                    editPerson(id);
+                });
+            });
         }
 
-        avatarUploadBtn.addEventListener('click', () => avatarInput.click());
-        avatarInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    currentImage = event.target.result;
-                    avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
-                    avatarUploadBtn.classList.add('has-image');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        // ============================================
+        // 🎯 Event Listeners
+        // ============================================
+        if (avatarUploadBtn && avatarInput) {
+            avatarUploadBtn.addEventListener('click', () => avatarInput.click());
+            avatarInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        currentImage = event.target.result;
+                        avatarUploadBtn.style.backgroundImage = `url(${currentImage})`;
+                        avatarUploadBtn.classList.add('has-image');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
 
-        monthSelect.addEventListener('change', updateDays);
-        yearSelect.addEventListener('change', updateDays);
-        cancelBtn.addEventListener('click', resetForm);
-        addBtn.addEventListener('click', saveBirthday);
-        nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') saveBirthday(); });
+        if (monthSelect) monthSelect.addEventListener('change', updateDays);
+        if (yearSelect) yearSelect.addEventListener('change', updateDays);
+        if (cancelBtn) cancelBtn.addEventListener('click', resetForm);
+        if (addBtn) addBtn.addEventListener('click', saveBirthday);
+        if (nameInput) {
+            nameInput.addEventListener('keypress', (e) => { 
+                if(e.key === 'Enter') saveBirthday(); 
+            });
+        }
 
+        // ============================================
+        // 🚀 Initialize App
+        // ============================================
         async function initApp() {
-            populateDateSelects(); renderList();
-            if (dbClient) { await loadBirthdays(); }
+            populateDateSelects();
+            renderList();
+            
+            if (dbClient) {
+                await loadBirthdays();
+            }
         }
-        initApp();
-    });
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+
+    })();
     </script>
 </body>
 </html>
