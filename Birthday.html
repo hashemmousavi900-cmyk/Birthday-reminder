@@ -141,7 +141,7 @@
         
         .birthday-item:hover { transform: translateY(-2px); border-color: var(--accent-1); box-shadow: 0 8px 20px -10px rgba(139, 92, 246, 0.2); z-index: 10; }
 
-        .item-left { display: flex; align-items: center; gap: 16px; }
+        .item-left { display: flex; align-items: center; gap: 16px; flex: 1; }
         .avatar {
             width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 1.2rem; color: #fff; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
@@ -153,13 +153,63 @@
         .item-meta svg { color: var(--accent-1); }
 
         .item-right { display: flex; align-items: center; gap: 8px; }
-        .countdown-badge { padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px; background: #f1f5f9; color: var(--text-main); }
-        .countdown-badge.soon { background: #fffbeb; color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); }
+        
+        .countdown-badge {
+            padding: 8px 16px; border-radius: 10px; font-size: 1rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px; background: #f1f5f9; color: var(--text-main);
+            cursor: default;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        /* Tooltip استایل */
+        .countdown-badge .tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
+        
+        .countdown-badge .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #1e293b;
+        }
+        
+        .countdown-badge:hover .tooltip {
+            display: block;
+        }
+        
+        .countdown-badge.soon { 
+            background: #fffbeb; color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); 
+        }
         .countdown-badge.today {
             background: linear-gradient(135deg, #ec4899, #be185d); color: #fff; border: none;
-            font-weight: 800; font-size: 0.95rem; padding: 10px 20px; border-radius: 15px 5px 15px 5px; 
+            font-weight: 800; font-size: 1.1rem; padding: 10px 20px; border-radius: 15px 5px 15px 5px; 
             box-shadow: 0 6px 18px -4px rgba(236, 72, 153, 0.5); animation: pulseBold 1.8s infinite; transform: rotate(-3deg); 
         }
+        .countdown-badge.today .tooltip {
+            background: #be185d;
+        }
+        .countdown-badge.today .tooltip::after {
+            border-top-color: #be185d;
+        }
+        
         @keyframes pulseBold {
             0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.5); transform: rotate(-3deg) scale(1); }
             50% { box-shadow: 0 0 0 8px rgba(236, 72, 153, 0); transform: rotate(-3deg) scale(1.03); }
@@ -178,7 +228,7 @@
         .loading { opacity: 0.6; pointer-events: none; }
 
         /* SVG Icon Styles */
-        .icon { width: 20px; height: 20px; display: inline-block; vertical-align: middle; fill: currentColor; stroke: none; }
+        .icon { width: 20px; height: 20px; display: inline-block; vertical-align: middle; fill: currentColor; stroke: none; flex-shrink: 0; }
         .icon-sm { width: 16px; height: 16px; }
         .icon-lg { width: 24px; height: 24px; }
         .icon-white { color: #fff; }
@@ -192,6 +242,11 @@
             .btn-add, .btn-cancel { width: 100%; }
             .birthday-item { flex-direction: column; align-items: flex-start; gap: 12px; }
             .item-right { width: 100%; justify-content: space-between; }
+            .countdown-badge .tooltip {
+                left: auto;
+                right: 0;
+                transform: none;
+            }
         }
     </style>
 </head>
@@ -209,7 +264,6 @@
         <div class="header">
             <div class="header-left">
                 <div class="header-icon">
-                    <!-- کیک تولد -->
                     <svg class="icon icon-lg icon-white" viewBox="0 0 24 24">
                         <path d="M12 2C11.5 2 10.8 2.3 10.5 2.8L8.8 5.6C8.3 6.5 8.8 7.5 9.8 7.8C10.6 8 11.3 7.6 11.6 7L12 6.2L12.4 7C12.7 7.6 13.4 8 14.2 7.8C15.2 7.5 15.7 6.5 15.2 5.6L13.5 2.8C13.2 2.3 12.5 2 12 2Z"/>
                         <path d="M18 9H6C4.9 9 4 9.9 4 11V12H20V11C20 9.9 19.1 9 18 9Z"/>
@@ -220,7 +274,6 @@
                 <div><h1>تولد‌یار</h1></div>
             </div>
             <div class="header-sub">
-                <!-- زنگ -->
                 <svg class="icon icon-sm" viewBox="0 0 24 24">
                     <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.9 16.3 5.3 13.5 4.5V3.5C13.5 2.7 12.8 2 12 2C11.2 2 10.5 2.7 10.5 3.5V4.5C7.7 5.3 6 7.9 6 11V16L4 18V19H20V18L18 16Z"/>
                 </svg>
@@ -234,7 +287,6 @@
                     <label>&nbsp;</label>
                     <div class="avatar-upload" id="avatarUploadBtn">
                         <input type="file" id="avatarInput" accept="image/*" hidden>
-                        <!-- دوربین -->
                         <svg class="icon" viewBox="0 0 24 24">
                             <path d="M9 2L7.2 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4H16.8L15 2H9Z"/>
                             <path d="M12 17C14.2 17 16 15.2 16 13C16 10.8 14.2 9 12 9C9.8 9 8 10.8 8 13C8 15.2 9.8 17 12 17Z"/>
@@ -243,7 +295,6 @@
                 </div>
                 <div class="field-group">
                     <label>
-                        <!-- کاربر -->
                         <svg class="icon icon-sm" viewBox="0 0 24 24">
                             <path d="M12 12C14.2 12 16 10.2 16 8C16 5.8 14.2 4 12 4C9.8 4 8 5.8 8 8C8 10.2 9.8 12 12 12Z"/>
                             <path d="M12 14C8.7 14 2 15.7 2 19V20H22V19C22 15.7 15.3 14 12 14Z"/>
@@ -254,7 +305,6 @@
                 </div>
                 <div class="field-group">
                     <label>
-                        <!-- تقویم -->
                         <svg class="icon icon-sm" viewBox="0 0 24 24">
                             <path d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V5C21 3.9 20.1 3 19 3ZM19 21H5V9H19V21Z"/>
                         </svg>
@@ -264,7 +314,6 @@
                 </div>
                 <div class="field-group">
                     <label>
-                        <!-- تقویم هفته -->
                         <svg class="icon icon-sm" viewBox="0 0 24 24">
                             <path d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V5C21 3.9 20.1 3 19 3ZM19 21H5V9H19V21Z"/>
                             <path d="M7 11H9V13H7V11Z M11 11H13V13H11V11Z M15 11H17V13H15V11Z M7 15H9V17H7V15Z M11 15H13V17H11V15Z M15 15H17V17H15V15Z"/>
@@ -275,7 +324,6 @@
                 </div>
                 <div class="field-group">
                     <label>
-                        <!-- سال -->
                         <svg class="icon icon-sm" viewBox="0 0 24 24">
                             <path d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V5C21 3.9 20.1 3 19 3ZM19 21H5V9H19V21Z"/>
                             <path d="M7 11H9V13H7V11Z M11 11H13V13H11V11Z M15 11H17V13H15V11Z"/>
@@ -286,14 +334,12 @@
                 </div>
                 <div class="action-buttons">
                     <button class="btn-add" id="addBtn">
-                        <!-- اضافه کردن -->
                         <svg class="icon" viewBox="0 0 24 24">
                             <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
                         </svg>
                         <span id="btnText">افزودن</span>
                     </button>
                     <button class="btn-cancel" id="cancelBtn">
-                        <!-- ضربدر -->
                         <svg class="icon" viewBox="0 0 24 24">
                             <path d="M19 6.4L17.6 5L12 10.6L6.4 5L5 6.4L10.6 12L5 17.6L6.4 19L12 13.4L17.6 19L19 17.6L13.4 12L19 6.4Z"/>
                         </svg>
@@ -304,7 +350,6 @@
 
         <div class="list-header">
             <h2>
-                <!-- هدیه -->
                 <svg class="icon" viewBox="0 0 24 24">
                     <path d="M20 6H16.5C17.8 5.1 18.5 3.6 17.8 2.2C17.1 0.8 15.4 0.2 14 0.9C12.7 1.5 12 2.9 12 4.2C12 2.9 11.3 1.5 10 0.9C8.6 0.2 6.9 0.8 6.2 2.2C5.5 3.6 6.2 5.1 7.5 6H4C2.9 6 2 6.9 2 8V11C2 12.1 2.9 13 4 13H20C21.1 13 22 12.1 22 11V8C22 6.9 21.1 6 20 6Z"/>
                     <path d="M4 15V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V15H4Z"/>
@@ -488,7 +533,6 @@
                     </svg>
                     در حال ذخیره...
                 `;
-                // اضافه کردن انیمیشن چرخش
                 const style = document.createElement('style');
                 style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
                 document.head.appendChild(style);
@@ -705,11 +749,18 @@
                 const avatarStyle = item.image ? `style="background-image: url('${item.image}');"` : '';
                 const avatarContent = item.image ? '' : item.name.charAt(0);
                 
+                // ساخت Tooltip برای سن
+                let tooltipText = '';
+                if (item.year && item.upcomingAge !== null) {
+                    tooltipText = `${toFa(item.upcomingAge)} ساله می‌شود`;
+                }
+                
                 let badgeClass = 'countdown-badge';
-                let badgeText = '';
+                let badgeContent = '';
+                
                 if(item.daysLeft === 0) {
                     badgeClass += ' today';
-                    badgeText = `
+                    badgeContent = `
                         <svg class="icon icon-sm" viewBox="0 0 24 24">
                             <path d="M20 6H16.5C17.8 5.1 18.5 3.6 17.8 2.2C17.1 0.8 15.4 0.2 14 0.9C12.7 1.5 12 2.9 12 4.2C12 2.9 11.3 1.5 10 0.9C8.6 0.2 6.9 0.8 6.2 2.2C5.5 3.6 6.2 5.1 7.5 6H4C2.9 6 2 6.9 2 8V11C2 12.1 2.9 13 4 13H20C21.1 13 22 12.1 22 11V8C22 6.9 21.1 6 20 6Z"/>
                             <path d="M4 15V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V15H4Z"/>
@@ -719,21 +770,21 @@
                     `;
                 } else if(item.daysLeft !== null && item.daysLeft <= 7) {
                     badgeClass += ' soon';
-                    badgeText = `
+                    badgeContent = `
                         <svg class="icon icon-sm" viewBox="0 0 24 24">
                             <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/>
                         </svg>
                         ${toFa(item.daysLeft)} روز
                     `;
                 } else if (item.daysLeft !== null) {
-                    badgeText = `
+                    badgeContent = `
                         <svg class="icon icon-sm" viewBox="0 0 24 24">
                             <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/>
                         </svg>
                         ${toFa(item.daysLeft)} روز
                     `;
                 } else {
-                    badgeText = `
+                    badgeContent = `
                         <svg class="icon icon-sm" viewBox="0 0 24 24">
                             <path d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V21C3 22.1 3.9 23 5 23H19C20.1 23 21 22.1 21 21V5C21 3.9 20.1 3 19 3ZM19 21H5V9H19V21Z"/>
                             <path d="M7 11H9V13H7V11Z M11 11H13V13H11V11Z M15 11H17V13H15V11Z"/>
@@ -756,18 +807,14 @@
                                     </svg>
                                     ${dateText}
                                 </span>
-                                ${item.year ? `<span>
-                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
-                                        <path d="M12 12C14.2 12 16 10.2 16 8C16 5.8 14.2 4 12 4C9.8 4 8 5.8 8 8C8 10.2 9.8 12 12 12Z"/>
-                                        <path d="M12 14C8.7 14 2 15.7 2 19V20H22V19C22 15.7 15.3 14 12 14Z"/>
-                                    </svg>
-                                    ${toFa(item.upcomingAge)} ساله می‌شود
-                                </span>` : ''}
                             </div>
                         </div>
                     </div>
                     <div class="item-right">
-                        <div class="${badgeClass}">${badgeText}</div>
+                        <div class="${badgeClass}">
+                            ${badgeContent}
+                            ${tooltipText ? `<span class="tooltip">🎂 ${tooltipText}</span>` : ''}
+                        </div>
                         <button class="btn-icon btn-edit" data-id="${item.id}" title="ویرایش">
                             <svg class="icon icon-sm" viewBox="0 0 24 24">
                                 <path d="M3 17.3V21H6.7L17.8 9.9L14.1 6.2L3 17.3Z"/>
